@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 // Bloque de define.
-#define DDEBUG
+#define DEBUG2
 #define TRUE 1
 #define FALSE 0
 
@@ -17,27 +17,32 @@ typedef struct laberinto
 
 // Bloque de encabezados.
 int** obtenerMatrizLaberinto(int N, int M, int* listmap);
-Laberinto* obtenerDatosLaberinto();
+Laberinto* guardarDatosLaberinto(int N, int M, int** matrizLaberinto);
 int* leerArchivo(char Nombre[20], int *N, int *M);
 
 // Bloque de funciones.
-
-Laberinto* obtenerDatosLaberinto()
+void obtenerDatosLaberinto(int *N, int *M, int *listmap, int **matrizLaberinto)
 {
-	int N = 0;
-	int M = 0;
-	int* listmap = leerArchivo("Entrada.in", &N, &M);
+	*N = 0;
+	*M = 0;
+	*listmap = leerArchivo("Entrada.in", &*N, &*M);
+}
 
+// Funcion que obtiene los datos del laberinto.
+// Retorna una struct con los datos del laberinto.
+Laberinto* guardarDatosLaberinto(int N, int M, int** matrizLaberinto)
+{
 	Laberinto* laberinto = (Laberinto*)malloc(sizeof(int));
-	
+
 	// Guardo los datos en la estructura laberinto.
 	laberinto->N;
 	laberinto->M;
-	laberinto->matrizLaberinto = obtenerMatrizLaberinto(N,M,listmap);
+	laberinto->matrizLaberinto;
 	return laberinto;
 }
 
-
+// Funcion que lee un archivo de texto con el laberinto.
+// Retorna una lista con el laberinto.
 int* leerArchivo(char Nombre[20], int *N, int *M)
 {
 	int* listmap; // Lista del laberinto
@@ -78,8 +83,9 @@ int* leerArchivo(char Nombre[20], int *N, int *M)
 	return listmap;
 }
 
-// Funcion que recibe como entrada la cantidad de filas y columnas
-// Retorna una lista de listas con el laberinto.
+// Funcion que recibe como entrada la cantidad de filas,columnas y lista
+// del laberinto.
+// Retorna una lista de listas con el laberinto convertido.
 int** obtenerMatrizLaberinto(int N, int M, int* listmap)
 {
 	// Asignamos memoria a la matriz.
@@ -111,7 +117,14 @@ int** obtenerMatrizLaberinto(int N, int M, int* listmap)
 
 int main(int argc, char const *argv[])
 {
-	Laberinto* nuevoLaberinto = obtenerDatosLaberinto();
+	int N;
+	int M;
+	int* listmap;
+	int** matrizLaberinto;
+	obtenerDatosLaberinto(&N, &M, &listmap);
+
+	matrizLaberinto = obtenerMatrizLaberinto(N, M, listmap);
+	Laberinto* nuevoLaberinto = guardarDatosLaberinto(N, M, matrizLaberinto);
 
 	return TRUE;
 }
