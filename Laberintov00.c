@@ -19,9 +19,12 @@ typedef struct laberinto
 int** obtenerMatrizLaberinto(int N, int M, int* listmap);
 Laberinto* guardarDatosLaberinto(int N, int M, int** matrizLaberinto);
 int* leerArchivo(char Nombre[20], int *N, int *M);
+void obtenerDatosLaberinto(int *N, int *M, int *listmap);
 
 // Bloque de funciones.
-void obtenerDatosLaberinto(int *N, int *M, int *listmap, int **matrizLaberinto)
+
+//Funcion que recolecta los datos del laberinto.
+void obtenerDatosLaberinto(int *N, int *M, int *listmap)
 {
 	*N = 0;
 	*M = 0;
