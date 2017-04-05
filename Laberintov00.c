@@ -20,8 +20,70 @@ int** obtenerMatrizLaberinto(int N, int M, int* listmap);
 Laberinto* guardarDatosLaberinto(int N, int M, int** matrizLaberinto);
 int* leerArchivo(char Nombre[20], int *N, int *M);
 void obtenerDatosLaberinto(int *N, int *M, int *listmap);
+int** recorrerLaberinto(Laberinto* nuevoLaberinto);
+void mostrarEstadoLaberinto(Laberinto* nuevoLaberinto);
+void buscarPuerta(int *datoX, int *datoY, Laberinto* L, char letra);
 
 // Bloque de funciones.
+
+//Funcion que recorre el laberinto
+int** recorrerLaberinto(Laberinto* nuevoLaberinto)
+{
+	int EntradaX = 0;
+	int EntradaY = 0;
+	int LlaveX = 0;
+	int LlaveY = 0;
+	int SalidaX = 0;
+	int SalidaY = 0;
+
+	buscarPuerta(&EntradaX, &EntradaY, nuevoLaberinto, 'E');
+	buscarPuerta(&SalidaX, &SalidaY, nuevoLaberinto, 'S');
+	buscarPuerta(&LlaveX, &LlaveY, nuevoLaberinto, 'K');
+
+	#ifdef DEBUG2
+	printf("Soy la ENTRADA, en la posicion %d,%d\n", EntradaX, EntradaY);
+	printf("Soy la SALIDA, en la posicion %d,%d\n", SalidaX, SalidaY);
+	printf("Soy la LLAVE, en la posicion %d,%d\n", LlaveX, LlaveY);
+	#endif
+}
+
+// Busco la posicion de un caracter en especifico.
+void buscarPuerta(int *datoX, int *datoY, Laberinto* L, char letra)
+{
+	int i;
+	int j;
+	for (i = 0; i < L->N; i++)
+	{
+		for (j = 0; j < L->M; j++)
+		{
+			if ((L->matrizLaberinto[i][j]) == letra)
+			{
+				*datoX = i;
+				*datoY = j;
+
+				#ifdef DEBUG
+				printf("%d,%d\n", *datoX, *datoY);
+				#endif
+			}
+		}
+	}
+}
+
+// Funcion que muestra el estado actual del laberinto.
+void mostrarEstadoLaberinto(Laberinto* nuevoLaberinto)
+{
+	int i;
+	int j;
+	for (i = 0; i < nuevoLaberinto->N; i++)
+	{
+		printf("\n");
+		for (j = 0; j < nuevoLaberinto->M; j++)
+		{
+			printf("%c", nuevoLaberinto->matrizLaberinto[i][j]);
+		}
+	}
+	printf("\n");
+}
 
 //Funcion que recolecta los datos del laberinto.
 void obtenerDatosLaberinto(int *N, int *M, int *listmap)
@@ -33,15 +95,15 @@ void obtenerDatosLaberinto(int *N, int *M, int *listmap)
 
 // Funcion que obtiene los datos del laberinto.
 // Retorna una struct con los datos del laberinto.
-Laberinto* guardarDatosLaberinto(int N, int M, int** matrizLaberinto)
+Laberinto* guardarDatosLaberinto(int Filas, int Columnas, int** inLaberinto)
 {
-	Laberinto* laberinto = (Laberinto*)malloc(sizeof(int));
+	Laberinto* nuevolaberinto = (Laberinto*)malloc(sizeof(Laberinto));
 
 	// Guardo los datos en la estructura laberinto.
-	laberinto->N;
-	laberinto->M;
-	laberinto->matrizLaberinto;
-	return laberinto;
+	nuevolaberinto->N = Filas;
+	nuevolaberinto->M = Columnas;
+	nuevolaberinto->matrizLaberinto = inLaberinto;
+	return nuevolaberinto;
 }
 
 // Funcion que lee un archivo de texto con el laberinto.
@@ -63,17 +125,20 @@ int* leerArchivo(char Nombre[20], int *N, int *M)
 
 	int i = 0;
 	int Largo = (*N**M);
+	int valor = 0;
 	listmap = (int*)malloc(sizeof(int)*Largo);
 
-	while(i < Largo)
+	while (i < Largo)
 	{
-        fscanf(archivoEntrada," %c",&listmap[i]);
-        i++;
-        
-        #ifdef DEBUG
-        printf("%c\n", listmap[i-1]);
-        #endif
-        
+		fscanf(archivoEntrada, " %c", &valor);
+		listmap[i] = valor;
+
+		#ifdef DEBUG
+			printf("Soy valor %d\n", valor);
+			printf("Soy lista %d\n", listmap[i]);
+		#endif
+
+		i++;
 	}
 	fclose(archivoEntrada);
 
@@ -105,7 +170,7 @@ int** obtenerMatrizLaberinto(int N, int M, int* listmap)
 			matrizLaberinto[i][j] = listmap[pos];
 			pos++;
 			#ifdef DEBUG
-				printf("%c",matrizLaberinto[i][j]);
+				printf("%d",matrizLaberinto[i][j]);
 			#endif
 		}
 		#ifdef DEBUG
@@ -125,9 +190,10 @@ int main(int argc, char const *argv[])
 	int* listmap;
 	int** matrizLaberinto;
 	obtenerDatosLaberinto(&N, &M, &listmap);
-
 	matrizLaberinto = obtenerMatrizLaberinto(N, M, listmap);
 	Laberinto* nuevoLaberinto = guardarDatosLaberinto(N, M, matrizLaberinto);
+	mostrarEstadoLaberinto(nuevoLaberinto);
+	recorrerLaberinto(nuevoLaberinto);
 
 	return TRUE;
 }
