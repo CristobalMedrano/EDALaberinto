@@ -5,10 +5,8 @@
 #define DEBUG2
 #define TRUE 1
 #define FALSE 0
-#define ARRIBA 0
-#define ABAJO 1
-#define IZQUIERDA 2
-#define DERECHA 3
+#define LLAVE 0
+#define SALIDA 1
 
 // Bloque de estructuras.
 
@@ -17,6 +15,8 @@ typedef struct laberinto
 	int N;
 	int M;
 	int** matrizLaberinto;
+	int** matrizEntradaLlave;
+	int** matrizLlaveSalida;
 } Laberinto;
 
 // Bloque de encabezados.
@@ -24,205 +24,244 @@ int** obtenerMatrizLaberinto(int N, int M, int* listmap);
 Laberinto* guardarDatosLaberinto(int N, int M, int** matrizLaberinto);
 int* leerArchivo(char Nombre[20], int *N, int *M);
 void obtenerDatosLaberinto(int *N, int *M, int *listmap);
-int** recorrerLaberinto(Laberinto* L, char busqueda);
+void recorrerLaberinto(Laberinto* L, char busqueda);
 void mostrarEstadoLaberinto(Laberinto* nuevoLaberinto);
 void buscarPuerta(int *datoX, int *datoY, Laberinto* L, char letra);
 int** obtenerMatrizTemporal(Laberinto* L);
-int** direccionarLaberinto(int Ex, int Ey, int Px,
-						   int Py, int N, int M, int** matrizTemporal,
-						   Laberinto* L);
+void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
+						   Laberinto* L, int busqueda);
 // Bloque de funciones.
 
 //Funcion que recorre el laberinto
-int** recorrerLaberinto(Laberinto* L, char busqueda)
+void recorrerLaberinto(Laberinto* L, char busqueda)
 {
-	int Ex = 0;
-	int Ey = 0;
-	int Lx = 0;
-	int Ly = 0;
-	int Sx = 0;
-	int Sy = 0;
+	int Ex = 0; // Entrada en X.
+	int Ey = 0; // Entrada en Y.
+	int Lx = 0; // Llave en X.
+	int Ly = 0; // Llave en Y.
+	int Sx = 0; // Salida en X.
+	int Sy = 0; // Salida en Y.
 
 	buscarPuerta(&Ex, &Ey, L, 'E');
 	buscarPuerta(&Sx, &Sy, L, 'S');
 	buscarPuerta(&Lx, &Ly, L, 'K');
 
-	#ifdef DEBUG
-	printf("Soy la ENTRADA, en la posicion %d,%d\n", Ex, Ey);
-	printf("Soy la SALIDA, en la posicion %d,%d\n", Sx, Sy);
-	printf("Soy la LLAVE, en la posicion %d,%d\n", Lx, Ly);
-	#endif
-
-	//Ojo aqui se viene el switch.
-	int N = L->N;
-	int M = L->M;
-
-	int** matrizTemporal = obtenerMatrizTemporal(L);
-	direccionarLaberinto(Lx, Ly, Sx, Sy, N, M, matrizTemporal, L);
-
+	int Pix = 0;	// Posicion Inicial en X.
+	int Piy = 0;	// Posicion Inicial en Y.
+	int Pfx = 0;	// Posicion Final en X.
+	int Pfy = 0;	// Posicion Final en Y.
+	switch (busqueda) 
+	{
+		case LLAVE: Pix = Ex;
+					Piy = Ey;
+					Pfx = Lx;
+					Pfy = Ly;
+					break;
+		case SALIDA:Pix = Lx;
+					Piy = Ly;
+					Pfx = Sx;
+					Pfy = Sy;
+					break;
+	}
+	int** cRecorrido = obtenerMatrizTemporal(L);
+	direccionarLaberinto(Pix, Piy, Pfx, Pfy, cRecorrido, L, busqueda);
+	// Ubicamos la posicion de la Entrada y Salida para una mejor lectura.
+	switch(busqueda)
+	{
+		case LLAVE: L->matrizEntradaLlave[Ex][Ey] = 'E';
+					L->matrizEntradaLlave[Lx][Ly] = 'K';
+					break;
+		case SALIDA: L->matrizLlaveSalida[Sx][Sy] = 'S';
+					 L->matrizLlaveSalida[Lx][Ly] = 'K';
+					 break;
+	}
 }
 
-int** direccionarLaberinto(int Ex, int Ey, int Px,
-						   int Py, int N, int M, int** matrizTemporal,
-						   Laberinto* L)
+void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
+						   Laberinto* L, int busqueda)
 {
-	printf("%d,%d\n", Ex, Ey);
-	if(Ex == Px && Ey == Py)
+	if(Pix == Pfx && Piy == Pfy)
 	{
-		printf("SOY LA FINAL\n");
-		for (int i = 0; i < N; ++i)
+		for (int i = 0; i < L->N; ++i)
 		{
-			for (int j = 0; j < M; ++j)
+			for (int j = 0; j < L->M; ++j)
 			{
-				printf("%c",matrizTemporal[i][j]);
-			}
-			printf("\n");
-		}
-		printf("\n Soy la Final \n");
-		return matrizTemporal;
-	}
-	// izquierda
-	else if (matrizTemporal[Ex][Ey-1] != '*' && matrizTemporal[Ex][Ey-1] == '.'
-		&& matrizTemporal[Ex][Ey-1] != '+')
-	{
-		Ey = Ey - 1;
-		matrizTemporal[Ex][Ey] = '+';
-		// Cruzar hacia la izquierda.
-		if (Ey == 0)
-		{
-			Ey = M-1;
-			matrizTemporal[Ex][Ey] = '+';
-			direccionarLaberinto(Ex, Ey, Px, Py, N, M, matrizTemporal, L);
-
-		} else 
-		{
-			direccionarLaberinto(Ex, Ey, Px, Py, N, M, matrizTemporal, L);
-		}
-
-		#ifdef DEBUG2
-			printf("Izquierda\n");
-			for (int i = 0; i < L->N; ++i)
-			{
-				for (int j = 0; j < L->M; ++j)
+				switch(busqueda)
 				{
-					printf("%c", matrizTemporal[i][j]);
+					case LLAVE: L->matrizEntradaLlave[i][j] = cRecorrido[i][j];
+								break;
+					case SALIDA: L->matrizLlaveSalida[i][j] = cRecorrido[i][j];
+								 break;
 				}
-				printf("\n");
+				cRecorrido[i][j] = '*';
 			}
-		#endif
-	}
-	// derecha
-	else if (matrizTemporal[Ex][Ey+1] != '*' && matrizTemporal[Ex][Ey+1] == '.'
-		&& matrizTemporal[Ex][Ey+1] != '+')
-	{
-		Ey = Ey + 1;
-		matrizTemporal[Ex][Ey] = '+';
-		// Cruzar hacia la derecha.
-		if (Ey == M-1)
-		{
-			Ey = 0;
-			matrizTemporal[Ex][Ey] = '+';
-			direccionarLaberinto(Ex, Ey, Px, Py, N, M, matrizTemporal, L);
-		} else 
-		{
-			direccionarLaberinto(Ex, Ey, Px, Py, N, M, matrizTemporal, L);
 		}
 
-		#ifdef DEBUG2
-			printf("Derecha\n");
+
+	}
+	// ----------------------DERECHA----------------------------//
+	// Caminar hacia la derecha.
+	
+	if (Piy <= L->M-2 && cRecorrido[Pix][Piy+1] != '*' && cRecorrido[Pix][Piy+1] != 'x')
+	{
+		cRecorrido[Pix][Piy] = 'x';
+		cRecorrido[Pix][Piy+1] = 'x';
+
+		#ifdef DEBUG
 			for (int i = 0; i < L->N; ++i)
 			{
 				for (int j = 0; j < L->M; ++j)
 				{
-					printf("%c", matrizTemporal[i][j]);
+					printf("%c", cRecorrido[i][j]);
 				}
 				printf("\n");
 			}
 		#endif
 
+		direccionarLaberinto(Pix, Piy+1, Pfx, Pfy, cRecorrido, L, busqueda);
 	}
-	// abajo
-	else if ((matrizTemporal[Ex+1][Ey] != '*' && matrizTemporal[Ex+1][Ey] == '.'
-		&& matrizTemporal[Ex+1][Ey] != '+') || matrizTemporal[Ex+1][Ey] == 'K')
+	// Cruzar hacia la derecha (Pac-Man).
+	if (Piy == L->M-1 && cRecorrido[Pix][Piy] != '*')
 	{
-		Ex = Ex + 1;
-		matrizTemporal[Ex][Ey] = '+';
-		
-		// Cruzar hacia abajo.
-		if (Ex == N-1)
-		{
-			Ex = 0;
-			matrizTemporal[Ex][Ey] = '+';
-			direccionarLaberinto(Ex, Ey, Px, Py, N, M, matrizTemporal, L);
-		} 
-		
-			direccionarLaberinto(Ex, Ey, Px, Py, N, M, matrizTemporal, L);
-			
-
-		#ifdef DEBUG2
-			printf("Abajo\n");
+		cRecorrido[Pix][0] = 'x';
+		#ifdef DEBUG
 			for (int i = 0; i < L->N; ++i)
 			{
 				for (int j = 0; j < L->M; ++j)
 				{
-					printf("%c", matrizTemporal[i][j]);
+					printf("%c", cRecorrido[i][j]);
 				}
 				printf("\n");
 			}
 		#endif
-
+		direccionarLaberinto(Pix, Piy-(L->M-1), Pfx, Pfy, cRecorrido, L, busqueda);
 	}
-	// arriba
-	else if (matrizTemporal[Ex-1][Ey] != '*' && matrizTemporal[Ex-1][Ey] == '.'
-		&& matrizTemporal[Ex-1][Ey] != '+')
+	// ----------------------ABAJO----------------------------//
+	// Caminar hacia abajo.
+	if (Pix <= L->N-2 && cRecorrido[Pix+1][Piy] != '*' && cRecorrido[Pix+1][Piy] != 'x')
 	{
-		Ex = Ex - 1;
-		matrizTemporal[Ex][Ey] = '+';
-		// Cruzar hacia arriba.
-		if (Ex == 0)
-		{
-			Ex = N-1;
-			matrizTemporal[Ex][Ey] = '+';
-			direccionarLaberinto(Ex, Ey, Px, Py, N, M, matrizTemporal, L);
-
-		} else 
-		{
-			direccionarLaberinto(Ex, Ey, Px, Py, N, M, matrizTemporal, L);
-		}
-
-		#ifdef DEBUG2
-			printf("Arriba\n");
+		cRecorrido[Pix][Piy] = 'x';
+		cRecorrido[Pix+1][Piy] = 'x';
+		#ifdef DEBUG
 			for (int i = 0; i < L->N; ++i)
 			{
 				for (int j = 0; j < L->M; ++j)
 				{
-					printf("%c", matrizTemporal[i][j]);
+					printf("%c", cRecorrido[i][j]);
 				}
-			printf("\n");
+				printf("\n");
 			}
 		#endif
+		direccionarLaberinto(Pix+1, Piy, Pfx, Pfy, cRecorrido, L, busqueda);
 	}
-	
-	
-	
-	matrizTemporal[Ex][Ey] = '.';
+	// Cruzar hacia abajo (Pac-Man)	
+	if (Pix == L->N-1 && cRecorrido[Pix][Piy] != '*')
+	{
+		cRecorrido[0][Piy] = 'x';
+		#ifdef DEBUG
+			for (int i = 0; i < L->N; ++i)
+			{
+				for (int j = 0; j < L->M; ++j)
+				{
+					printf("%c", cRecorrido[i][j]);
+				}
+				printf("\n");
+			}
+		#endif
+		direccionarLaberinto(Pix-(L->N-1), Piy, Pfx, Pfy, cRecorrido, L, busqueda);
+	}	
+	// ----------------------IZQUIERDA----------------------------//
+	// Caminar hacia izquierda.
+	if (Piy >= 1 && cRecorrido[Pix][Piy-1] != '*' && cRecorrido[Pix][Piy-1] != 'x')
+	{
+		cRecorrido[Pix][Piy] = 'x';
+		cRecorrido[Pix][Piy-1] = 'x';
+		#ifdef DEBUG
+			for (int i = 0; i < L->N; ++i)
+			{
+				for (int j = 0; j < L->M; ++j)
+				{
+					printf("%c", cRecorrido[i][j]);
+				}
+				printf("\n");
+			}
+		#endif
+		direccionarLaberinto(Pix, Piy-1, Pfx, Pfy, cRecorrido, L, busqueda);
+	}
+	// Cruzar hacia izquierda (Pac-Man)
+	if (Piy == 0 && cRecorrido[Pix][Piy] != '*')
+	{
+		cRecorrido[Pix][L->M-1] = 'x';
+		#ifdef DEBUG
+			for (int i = 0; i < L->N; ++i)
+			{
+				for (int j = 0; j < L->M; ++j)
+				{
+					printf("%c", cRecorrido[i][j]);
+				}
+				printf("\n");
+			}
+		#endif
+		direccionarLaberinto(Pix, Piy+(L->M-1), Pfx, Pfy, cRecorrido, L, busqueda);
+	}
+	// ----------------------ARRIBA----------------------------//
+	// Caminar hacia arriba.
+	if (Pix >= 1 && cRecorrido[Pix-1][Piy] != '*' && cRecorrido[Pix-1][Piy] != 'x')
+	{
+		cRecorrido[Pix][Piy] = 'x';
+		cRecorrido[Pix-1][Piy] = 'x';
+		#ifdef DEBUG
+			for (int i = 0; i < L->N; ++i)
+			{
+				for (int j = 0; j < L->M; ++j)
+				{
+					printf("%c", cRecorrido[i][j]);
+				}
+				printf("\n");
+			}
+		#endif
+		direccionarLaberinto(Pix-1, Piy, Pfx, Pfy, cRecorrido, L, busqueda);
+	}
+	// Cruzar hacia arriba (Pac-Man)
+	if (Pix == 0 && cRecorrido[Pix][Piy] != '*')
+	{
+		cRecorrido[L->N-1][Piy] = 'x';
+		#ifdef DEBUG
+			for (int i = 0; i < L->N; ++i)
+			{
+				for (int j = 0; j < L->M; ++j)
+				{
+					printf("%c", cRecorrido[i][j]);
+				}
+				printf("\n");
+			}
+		#endif
+		direccionarLaberinto(Pix+(L->N-1), Piy, Pfx, Pfy, cRecorrido, L, busqueda);
+	}
+	// ----------------------DEVOLVER----------------------------//
+	cRecorrido[Pix][Piy] = '.';
 }
-
 
 int** obtenerMatrizTemporal(Laberinto* L)
 {
-	int** matrizTemporal = (int **)malloc(L->N * sizeof(int *));
+	int** cRecorrido = (int **)malloc(L->N * sizeof(int *));
 						 for (int i = 0; i < L->N; ++i)
-						 matrizTemporal[i] = (int *)malloc(L->M * sizeof(int));
+						 cRecorrido[i] = (int *)malloc(L->M * sizeof(int));
 	
 	for (int i = 0; i < L->N; ++i)
 	{
 		for (int j = 0; j < L->M; ++j)
 		{
-			matrizTemporal[i][j] = L->matrizLaberinto[i][j];
+			cRecorrido[i][j] = L->matrizLaberinto[i][j];
+			switch (cRecorrido[i][j]) 
+			{
+				case 'E' : cRecorrido[i][j] = '.';
+				case 'K' : cRecorrido[i][j] = '.';
+				case 'S' : cRecorrido[i][j] = '.';
+			}
 		}
 	}
-	return matrizTemporal;
+	return cRecorrido;
 }
 
 
@@ -248,7 +287,7 @@ void buscarPuerta(int *datoX, int *datoY, Laberinto* L, char letra)
 	}
 }
 
-// Funcion que muestra el estado actual del laberinto.
+// Funcion que muestra el estado actual del laberinto. MODIFICAR
 void mostrarEstadoLaberinto(Laberinto* nuevoLaberinto)
 {
 	int i;
@@ -278,10 +317,21 @@ Laberinto* guardarDatosLaberinto(int Filas, int Columnas, int** inLaberinto)
 {
 	Laberinto* nuevolaberinto = (Laberinto*)malloc(sizeof(Laberinto));
 
+	int** inEntradaLlave = (int **)malloc(Filas * sizeof(int *));
+							for (int i = 0; i < Filas; ++i)
+							inEntradaLlave[i] = (int *)malloc(Columnas * sizeof(int));
+
+	// Crear pedir memoria.
+	int** inLlaveSalida = (int **)malloc(Filas * sizeof(int *));
+							for (int i = 0; i < Filas; ++i)
+							inLlaveSalida[i] = (int *)malloc(Columnas * sizeof(int));
+
 	// Guardo los datos en la estructura laberinto.
 	nuevolaberinto->N = Filas;
 	nuevolaberinto->M = Columnas;
 	nuevolaberinto->matrizLaberinto = inLaberinto;
+	nuevolaberinto->matrizEntradaLlave = inEntradaLlave;
+	nuevolaberinto->matrizLlaveSalida = inLlaveSalida;
 	return nuevolaberinto;
 }
 
@@ -371,10 +421,29 @@ int main(int argc, char const *argv[])
 	obtenerDatosLaberinto(&N, &M, &listmap);
 	matrizLaberinto = obtenerMatrizLaberinto(N, M, listmap);
 	Laberinto* nuevoLaberinto = guardarDatosLaberinto(N, M, matrizLaberinto);
-	mostrarEstadoLaberinto(nuevoLaberinto);
 	// Buscamos la llave.
-	recorrerLaberinto(nuevoLaberinto, 'L');
-	mostrarEstadoLaberinto(nuevoLaberinto);
+	recorrerLaberinto(nuevoLaberinto, LLAVE);
+	recorrerLaberinto(nuevoLaberinto, SALIDA);
+	int i;
+	int j;
+	for (i = 0; i < N; i++)
+	{
+		printf("\n");
+		for (j = 0; j < M; j++)
+		{
+			printf("%c", nuevoLaberinto->matrizEntradaLlave[i][j]);
+		}
+	}
+	printf("\n");
+	for (i = 0; i < N; i++)
+	{
+		printf("\n");
+		for (j = 0; j < M; j++)
+		{
+			printf("%c", nuevoLaberinto->matrizLlaveSalida[i][j]);
+		}
+	}
+	printf("\n");
 
 	// Buscamos la salida.
 
