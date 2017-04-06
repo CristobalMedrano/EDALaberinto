@@ -5,6 +5,10 @@
 #define DEBUG2
 #define TRUE 1
 #define FALSE 0
+#define ARRIBA 0
+#define ABAJO 1
+#define IZQUIERDA 2
+#define DERECHA 3
 
 // Bloque de estructuras.
 
@@ -20,32 +24,207 @@ int** obtenerMatrizLaberinto(int N, int M, int* listmap);
 Laberinto* guardarDatosLaberinto(int N, int M, int** matrizLaberinto);
 int* leerArchivo(char Nombre[20], int *N, int *M);
 void obtenerDatosLaberinto(int *N, int *M, int *listmap);
-int** recorrerLaberinto(Laberinto* nuevoLaberinto);
+int** recorrerLaberinto(Laberinto* L, char busqueda);
 void mostrarEstadoLaberinto(Laberinto* nuevoLaberinto);
 void buscarPuerta(int *datoX, int *datoY, Laberinto* L, char letra);
-
+int** obtenerMatrizTemporal(Laberinto* L);
+int** direccionarLaberinto(int Ex, int Ey, int Px,
+						   int Py, int N, int M, int** matrizTemporal,
+						   Laberinto* L);
 // Bloque de funciones.
 
 //Funcion que recorre el laberinto
-int** recorrerLaberinto(Laberinto* nuevoLaberinto)
+int** recorrerLaberinto(Laberinto* L, char busqueda)
 {
-	int EntradaX = 0;
-	int EntradaY = 0;
-	int LlaveX = 0;
-	int LlaveY = 0;
-	int SalidaX = 0;
-	int SalidaY = 0;
+	int Ex = 0;
+	int Ey = 0;
+	int Lx = 0;
+	int Ly = 0;
+	int Sx = 0;
+	int Sy = 0;
 
-	buscarPuerta(&EntradaX, &EntradaY, nuevoLaberinto, 'E');
-	buscarPuerta(&SalidaX, &SalidaY, nuevoLaberinto, 'S');
-	buscarPuerta(&LlaveX, &LlaveY, nuevoLaberinto, 'K');
+	buscarPuerta(&Ex, &Ey, L, 'E');
+	buscarPuerta(&Sx, &Sy, L, 'S');
+	buscarPuerta(&Lx, &Ly, L, 'K');
 
-	#ifdef DEBUG2
-	printf("Soy la ENTRADA, en la posicion %d,%d\n", EntradaX, EntradaY);
-	printf("Soy la SALIDA, en la posicion %d,%d\n", SalidaX, SalidaY);
-	printf("Soy la LLAVE, en la posicion %d,%d\n", LlaveX, LlaveY);
+	#ifdef DEBUG
+	printf("Soy la ENTRADA, en la posicion %d,%d\n", Ex, Ey);
+	printf("Soy la SALIDA, en la posicion %d,%d\n", Sx, Sy);
+	printf("Soy la LLAVE, en la posicion %d,%d\n", Lx, Ly);
 	#endif
+
+	//Ojo aqui se viene el switch.
+	int N = L->N;
+	int M = L->M;
+
+	int** matrizTemporal = obtenerMatrizTemporal(L);
+	direccionarLaberinto(Lx, Ly, Sx, Sy, N, M, matrizTemporal, L);
+
 }
+
+int** direccionarLaberinto(int Ex, int Ey, int Px,
+						   int Py, int N, int M, int** matrizTemporal,
+						   Laberinto* L)
+{
+	printf("%d,%d\n", Ex, Ey);
+	if(Ex == Px && Ey == Py)
+	{
+		printf("SOY LA FINAL\n");
+		for (int i = 0; i < N; ++i)
+		{
+			for (int j = 0; j < M; ++j)
+			{
+				printf("%c",matrizTemporal[i][j]);
+			}
+			printf("\n");
+		}
+		printf("\n Soy la Final \n");
+		return matrizTemporal;
+	}
+	// izquierda
+	else if (matrizTemporal[Ex][Ey-1] != '*' && matrizTemporal[Ex][Ey-1] == '.'
+		&& matrizTemporal[Ex][Ey-1] != '+')
+	{
+		Ey = Ey - 1;
+		matrizTemporal[Ex][Ey] = '+';
+		// Cruzar hacia la izquierda.
+		if (Ey == 0)
+		{
+			Ey = M-1;
+			matrizTemporal[Ex][Ey] = '+';
+			direccionarLaberinto(Ex, Ey, Px, Py, N, M, matrizTemporal, L);
+
+		} else 
+		{
+			direccionarLaberinto(Ex, Ey, Px, Py, N, M, matrizTemporal, L);
+		}
+
+		#ifdef DEBUG2
+			printf("Izquierda\n");
+			for (int i = 0; i < L->N; ++i)
+			{
+				for (int j = 0; j < L->M; ++j)
+				{
+					printf("%c", matrizTemporal[i][j]);
+				}
+				printf("\n");
+			}
+		#endif
+	}
+	// derecha
+	else if (matrizTemporal[Ex][Ey+1] != '*' && matrizTemporal[Ex][Ey+1] == '.'
+		&& matrizTemporal[Ex][Ey+1] != '+')
+	{
+		Ey = Ey + 1;
+		matrizTemporal[Ex][Ey] = '+';
+		// Cruzar hacia la derecha.
+		if (Ey == M-1)
+		{
+			Ey = 0;
+			matrizTemporal[Ex][Ey] = '+';
+			direccionarLaberinto(Ex, Ey, Px, Py, N, M, matrizTemporal, L);
+		} else 
+		{
+			direccionarLaberinto(Ex, Ey, Px, Py, N, M, matrizTemporal, L);
+		}
+
+		#ifdef DEBUG2
+			printf("Derecha\n");
+			for (int i = 0; i < L->N; ++i)
+			{
+				for (int j = 0; j < L->M; ++j)
+				{
+					printf("%c", matrizTemporal[i][j]);
+				}
+				printf("\n");
+			}
+		#endif
+
+	}
+	// abajo
+	else if ((matrizTemporal[Ex+1][Ey] != '*' && matrizTemporal[Ex+1][Ey] == '.'
+		&& matrizTemporal[Ex+1][Ey] != '+') || matrizTemporal[Ex+1][Ey] == 'K')
+	{
+		Ex = Ex + 1;
+		matrizTemporal[Ex][Ey] = '+';
+		
+		// Cruzar hacia abajo.
+		if (Ex == N-1)
+		{
+			Ex = 0;
+			matrizTemporal[Ex][Ey] = '+';
+			direccionarLaberinto(Ex, Ey, Px, Py, N, M, matrizTemporal, L);
+		} 
+		
+			direccionarLaberinto(Ex, Ey, Px, Py, N, M, matrizTemporal, L);
+			
+
+		#ifdef DEBUG2
+			printf("Abajo\n");
+			for (int i = 0; i < L->N; ++i)
+			{
+				for (int j = 0; j < L->M; ++j)
+				{
+					printf("%c", matrizTemporal[i][j]);
+				}
+				printf("\n");
+			}
+		#endif
+
+	}
+	// arriba
+	else if (matrizTemporal[Ex-1][Ey] != '*' && matrizTemporal[Ex-1][Ey] == '.'
+		&& matrizTemporal[Ex-1][Ey] != '+')
+	{
+		Ex = Ex - 1;
+		matrizTemporal[Ex][Ey] = '+';
+		// Cruzar hacia arriba.
+		if (Ex == 0)
+		{
+			Ex = N-1;
+			matrizTemporal[Ex][Ey] = '+';
+			direccionarLaberinto(Ex, Ey, Px, Py, N, M, matrizTemporal, L);
+
+		} else 
+		{
+			direccionarLaberinto(Ex, Ey, Px, Py, N, M, matrizTemporal, L);
+		}
+
+		#ifdef DEBUG2
+			printf("Arriba\n");
+			for (int i = 0; i < L->N; ++i)
+			{
+				for (int j = 0; j < L->M; ++j)
+				{
+					printf("%c", matrizTemporal[i][j]);
+				}
+			printf("\n");
+			}
+		#endif
+	}
+	
+	
+	
+	matrizTemporal[Ex][Ey] = '.';
+}
+
+
+int** obtenerMatrizTemporal(Laberinto* L)
+{
+	int** matrizTemporal = (int **)malloc(L->N * sizeof(int *));
+						 for (int i = 0; i < L->N; ++i)
+						 matrizTemporal[i] = (int *)malloc(L->M * sizeof(int));
+	
+	for (int i = 0; i < L->N; ++i)
+	{
+		for (int j = 0; j < L->M; ++j)
+		{
+			matrizTemporal[i][j] = L->matrizLaberinto[i][j];
+		}
+	}
+	return matrizTemporal;
+}
+
 
 // Busco la posicion de un caracter en especifico.
 void buscarPuerta(int *datoX, int *datoY, Laberinto* L, char letra)
@@ -193,7 +372,11 @@ int main(int argc, char const *argv[])
 	matrizLaberinto = obtenerMatrizLaberinto(N, M, listmap);
 	Laberinto* nuevoLaberinto = guardarDatosLaberinto(N, M, matrizLaberinto);
 	mostrarEstadoLaberinto(nuevoLaberinto);
-	recorrerLaberinto(nuevoLaberinto);
+	// Buscamos la llave.
+	recorrerLaberinto(nuevoLaberinto, 'L');
+	mostrarEstadoLaberinto(nuevoLaberinto);
+
+	// Buscamos la salida.
 
 	return TRUE;
 }
