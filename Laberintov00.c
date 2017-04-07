@@ -343,6 +343,10 @@ int* leerArchivo(char Nombre[20], int *N, int *M)
 
 	FILE *archivoEntrada;
 	archivoEntrada = fopen(Nombre, "r");
+	if(archivoEntrada == NULL)
+    {
+        printf("Error al abrir archivo");
+    }
 
 	fscanf(archivoEntrada,"%d",&*N);
 	fscanf(archivoEntrada,"%d",&*M);
@@ -377,6 +381,7 @@ int* leerArchivo(char Nombre[20], int *N, int *M)
 		printf("Valor en la pos:%d dato:%c\n", i, listmap[i]);
 	}
 	#endif
+	printf("Archivo leido Correctamente.\n");
 	return listmap;
 }
 
@@ -410,6 +415,45 @@ int** obtenerMatrizLaberinto(int N, int M, int* listmap)
 	return matrizLaberinto;
 }
 
+void escribirLaberinto(Laberinto* L)
+{
+	//Obtenemos el puntero del archivo a leer.
+	FILE *archivoSalida;
+	// Abrimos el archivo a guardar.
+	archivoSalida = fopen("Salida.out", "w");
+    // Notificamos error en caso de no poder abrir el archivo.
+    if(archivoSalida == NULL)
+    {
+        printf("Error al abrir archivo");
+    }
+    int i;
+	int j;
+
+	// Escribimos cada posicicion de la matriz en el archivo.
+	for (i = 0; i < L->N; i++)
+	{
+		for (j = 0; j < L->M; j++)
+		{
+			fprintf(archivoSalida, "%c", L->matrizEntradaLlave[i][j]);
+		}
+		fprintf(archivoSalida,"\n");
+	}
+	fprintf(archivoSalida,"\n");
+
+	// Escribimos cada posicicion de la matriz en el archivo.
+	for (i = 0; i < L->N; i++)
+	{
+		for (j = 0; j < L->M; j++)
+		{
+			fprintf(archivoSalida, "%c", L->matrizLlaveSalida[i][j]);
+		}
+		fprintf(archivoSalida,"\n");
+	}
+
+	printf("Archivo escrito Correctamente.\n");
+    fclose(archivoSalida);
+}
+
 // Funcion main.
 
 int main(int argc, char const *argv[])
@@ -418,34 +462,34 @@ int main(int argc, char const *argv[])
 	int M;
 	int* listmap;
 	int** matrizLaberinto;
+	printf("\n //---- Iniciando Solucionador. ----// \n");
+	
+	// Obtenemos los datos del laberinto:
+	// Cantidad de Filas - N
+	// Cantidad de Columnas - M
+	// Lista del laberinto.
+	// En listmap, se encuentra el nombre del archivo de entrada
+	// en este caso "Entrada.in".
 	obtenerDatosLaberinto(&N, &M, &listmap);
+	
+	// Creamos una matriz para el laberinto.
 	matrizLaberinto = obtenerMatrizLaberinto(N, M, listmap);
-	Laberinto* nuevoLaberinto = guardarDatosLaberinto(N, M, matrizLaberinto);
-	// Buscamos la llave.
-	recorrerLaberinto(nuevoLaberinto, LLAVE);
-	recorrerLaberinto(nuevoLaberinto, SALIDA);
-	int i;
-	int j;
-	for (i = 0; i < N; i++)
-	{
-		printf("\n");
-		for (j = 0; j < M; j++)
-		{
-			printf("%c", nuevoLaberinto->matrizEntradaLlave[i][j]);
-		}
-	}
-	printf("\n");
-	for (i = 0; i < N; i++)
-	{
-		printf("\n");
-		for (j = 0; j < M; j++)
-		{
-			printf("%c", nuevoLaberinto->matrizLlaveSalida[i][j]);
-		}
-	}
-	printf("\n");
+	
+	// Guardamos los datos del laberinto en una struct Laberinto.
+	Laberinto* L = guardarDatosLaberinto(N, M, matrizLaberinto);
+	
+	// Recorremos la matriz del laberinto buscando la LLAVE.
+	recorrerLaberinto(L, LLAVE);
+	printf("Llave encontrada.\n");
+	
+	// Recorremos la matriz del laberinto buscando la SALIDA.
+	recorrerLaberinto(L, SALIDA);
+	printf("Salida encontrada.\n");
 
-	// Buscamos la salida.
+	// Escribimos la solucion del laberinto en un archivo. 
+	// "Salida.out".
+	escribirLaberinto(L);
 
+	printf("//---- Solucionador Terminado. ----//\n");
 	return TRUE;
 }
