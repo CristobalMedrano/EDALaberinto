@@ -83,21 +83,14 @@ void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
 	if(Pix == Pfx && Piy == Pfy)
 	{
 		for (int i = 0; i < L->N; ++i)
-		{
-			for (int j = 0; j < L->M; ++j)
 			{
-				switch(busqueda)
+				for (int j = 0; j < L->M; ++j)
 				{
-					case LLAVE: L->matrizEntradaLlave[i][j] = cRecorrido[i][j];
-								break;
-					case SALIDA: L->matrizLlaveSalida[i][j] = cRecorrido[i][j];
-								 break;
+					printf("%c", cRecorrido[i][j]);
 				}
-				cRecorrido[i][j] = '*';
+				printf("\n");
 			}
-		}
-
-
+		printf("Termine el lab\n");
 	}
 	// ----------------------DERECHA----------------------------//
 	// Caminar hacia la derecha.
@@ -105,7 +98,6 @@ void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
 	if (Piy <= L->M-2 && cRecorrido[Pix][Piy+1] != '*' && cRecorrido[Pix][Piy+1] != 'x')
 	{
 		cRecorrido[Pix][Piy] = 'x';
-		cRecorrido[Pix][Piy+1] = 'x';
 
 		#ifdef DEBUG
 			for (int i = 0; i < L->N; ++i)
@@ -141,7 +133,6 @@ void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
 	if (Pix <= L->N-2 && cRecorrido[Pix+1][Piy] != '*' && cRecorrido[Pix+1][Piy] != 'x')
 	{
 		cRecorrido[Pix][Piy] = 'x';
-		cRecorrido[Pix+1][Piy] = 'x';
 		#ifdef DEBUG
 			for (int i = 0; i < L->N; ++i)
 			{
@@ -153,10 +144,11 @@ void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
 			}
 		#endif
 		direccionarLaberinto(Pix+1, Piy, Pfx, Pfy, cRecorrido, L, busqueda);
-	}
+	}	
 	// Cruzar hacia abajo (Pac-Man)	
-	if (Pix == L->N-1 && cRecorrido[Pix][Piy] != '*')
+	if (Pix == L->N-1 && cRecorrido[Pix][Piy] != '*' && cRecorrido[Pix][Piy] != 'x')
 	{
+		cRecorrido[L->N-1][Piy] = 'x';
 		cRecorrido[0][Piy] = 'x';
 		#ifdef DEBUG
 			for (int i = 0; i < L->N; ++i)
@@ -168,14 +160,16 @@ void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
 				printf("\n");
 			}
 		#endif
+		printf("Estoy bajando a lo Pac-Man\n");
+		//Pix = Pix-(L->N-1)
 		direccionarLaberinto(Pix-(L->N-1), Piy, Pfx, Pfy, cRecorrido, L, busqueda);
-	}	
+		//Pix = L->N-2;
+	}
 	// ----------------------IZQUIERDA----------------------------//
 	// Caminar hacia izquierda.
 	if (Piy >= 1 && cRecorrido[Pix][Piy-1] != '*' && cRecorrido[Pix][Piy-1] != 'x')
 	{
 		cRecorrido[Pix][Piy] = 'x';
-		cRecorrido[Pix][Piy-1] = 'x';
 		#ifdef DEBUG
 			for (int i = 0; i < L->N; ++i)
 			{
@@ -209,7 +203,6 @@ void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
 	if (Pix >= 1 && cRecorrido[Pix-1][Piy] != '*' && cRecorrido[Pix-1][Piy] != 'x')
 	{
 		cRecorrido[Pix][Piy] = 'x';
-		cRecorrido[Pix-1][Piy] = 'x';
 		#ifdef DEBUG
 			for (int i = 0; i < L->N; ++i)
 			{
@@ -483,7 +476,7 @@ int main(int argc, char const *argv[])
 	printf("Llave encontrada.\n");
 	
 	// Recorremos la matriz del laberinto buscando la SALIDA.
-	recorrerLaberinto(L, SALIDA);
+	//recorrerLaberinto(L, SALIDA);
 	printf("Salida encontrada.\n");
 
 	// Escribimos la solucion del laberinto en un archivo. 
