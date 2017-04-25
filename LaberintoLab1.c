@@ -108,13 +108,15 @@ void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
 				}
 				printf("\n");
 			}
+			printf("\n");
 		#endif
 
 		direccionarLaberinto(Pix, Piy+1, Pfx, Pfy, cRecorrido, L, busqueda);
 	}
 	// Cruzar hacia la derecha (Pac-Man).
-	if (Piy == L->M-1 && cRecorrido[Pix][Piy] != '*')
-	{
+	if (Piy == L->M-1 && cRecorrido[Pix][Piy] != '*' && cRecorrido[Pix][Piy] != 'x')
+	{	
+		cRecorrido[Pix][L->M-1] = 'x';
 		cRecorrido[Pix][0] = 'x';
 		#ifdef DEBUG
 			for (int i = 0; i < L->N; ++i)
@@ -125,6 +127,7 @@ void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
 				}
 				printf("\n");
 			}
+			printf("\n");
 		#endif
 		direccionarLaberinto(Pix, Piy-(L->M-1), Pfx, Pfy, cRecorrido, L, busqueda);
 	}
@@ -142,6 +145,7 @@ void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
 				}
 				printf("\n");
 			}
+			printf("\n");
 		#endif
 		direccionarLaberinto(Pix+1, Piy, Pfx, Pfy, cRecorrido, L, busqueda);
 	}	
@@ -159,11 +163,9 @@ void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
 				}
 				printf("\n");
 			}
+			printf("\n");
 		#endif
-		printf("Estoy bajando a lo Pac-Man\n");
-		//Pix = Pix-(L->N-1)
 		direccionarLaberinto(Pix-(L->N-1), Piy, Pfx, Pfy, cRecorrido, L, busqueda);
-		//Pix = L->N-2;
 	}
 	// ----------------------IZQUIERDA----------------------------//
 	// Caminar hacia izquierda.
@@ -179,12 +181,14 @@ void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
 				}
 				printf("\n");
 			}
+			printf("\n");
 		#endif
 		direccionarLaberinto(Pix, Piy-1, Pfx, Pfy, cRecorrido, L, busqueda);
 	}
 	// Cruzar hacia izquierda (Pac-Man)
-	if (Piy == 0 && cRecorrido[Pix][Piy] != '*')
+	if (Piy == 0 && cRecorrido[Pix][Piy] != '*' && cRecorrido[Pix][Piy] != 'x')
 	{
+		cRecorrido[Pix][0] = 'x';
 		cRecorrido[Pix][L->M-1] = 'x';
 		#ifdef DEBUG
 			for (int i = 0; i < L->N; ++i)
@@ -195,6 +199,7 @@ void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
 				}
 				printf("\n");
 			}
+			printf("\n");
 		#endif
 		direccionarLaberinto(Pix, Piy+(L->M-1), Pfx, Pfy, cRecorrido, L, busqueda);
 	}
@@ -212,12 +217,14 @@ void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
 				}
 				printf("\n");
 			}
+			printf("\n");
 		#endif
 		direccionarLaberinto(Pix-1, Piy, Pfx, Pfy, cRecorrido, L, busqueda);
 	}
 	// Cruzar hacia arriba (Pac-Man)
-	if (Pix == 0 && cRecorrido[Pix][Piy] != '*')
+	if (Pix == 0 && cRecorrido[Pix][Piy] != '*' && cRecorrido[Pix][Piy] != 'x')
 	{
+		cRecorrido[0][Piy] = 'x';
 		cRecorrido[L->N-1][Piy] = 'x';
 		#ifdef DEBUG
 			for (int i = 0; i < L->N; ++i)
@@ -228,6 +235,7 @@ void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
 				}
 				printf("\n");
 			}
+			printf("\n");
 		#endif
 		direccionarLaberinto(Pix+(L->N-1), Piy, Pfx, Pfy, cRecorrido, L, busqueda);
 	}
