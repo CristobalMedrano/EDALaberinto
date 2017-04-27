@@ -77,42 +77,54 @@ void recorrerLaberinto(Laberinto* L, char busqueda)
 					 break;
 	}
 }
+int conCamino(Laberinto* L, int** cRecorrido)
+{
+	int caminoMin = 0;
+	for (int i = 0; i < L->N; ++i)
+	{
+		for (int j = 0; j < L->M; ++j)
+		{
+			if(cRecorrido[i][j] == 'x')
+			{
+				caminoMin++;
+			}		
+		}
+	}
+	return caminoMin;
+}
+
+void guardarCaminoMin(Laberinto* L, int** cRecorrido, int caminoMin, int busqueda)
+{
+	// Guardamos el camino minimo.
+	for (int i = 0; i < L->N; ++i)
+	{
+		for (int j = 0; j < L->M; ++j)
+		{
+			if(L->contCaminoMinimo >= caminoMin)
+			{
+				L->contCaminoMinimo = caminoMin;
+				switch(busqueda)
+ 				{
+ 					case LLAVE: L->matrizEntradaLlave[i][j] = cRecorrido[i][j];
+ 								break;
+ 					case SALIDA: L->matrizLlaveSalida[i][j] = cRecorrido[i][j];
+ 								 break;
+ 				}
+			}
+		}
+	}
+}
 
 void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
 						   Laberinto* L, int busqueda)
 {
 	if(Pix == Pfx && Piy == Pfy)
 	{
-		// Verificamos la cantidad de espacios a caminar.
-		int caminoMin = 0;
-		for (int i = 0; i < L->N; ++i)
-			{
-				for (int j = 0; j < L->M; ++j)
-				{
-					if(cRecorrido[i][j] == 'x')
-					{
-						caminoMin++;
-					}		
-				}
-			}
-		// Guardamos el camino minimo.
-		for (int i = 0; i < L->N; ++i)
-			{
-				for (int j = 0; j < L->M; ++j)
-				{
-					if(L->contCaminoMinimo >= caminoMin)
-					{
-						L->contCaminoMinimo = caminoMin;
-						switch(busqueda)
-		 				{
-		 					case LLAVE: L->matrizEntradaLlave[i][j] = cRecorrido[i][j];
-		 								break;
-		 					case SALIDA: L->matrizLlaveSalida[i][j] = cRecorrido[i][j];
-		 								 break;
-		 				}
-					}
-				}
-			}
+		// Contamos la cantidad de pasos a recorrer.
+		int caminoMin = conCamino(L, cRecorrido);
+		// Comparamos la cantidad de pasos obtenida y seleccionamos la mas corta.
+		guardarCaminoMin(L, cRecorrido, caminoMin, busqueda);
+		
 	}
 	// ----------------------DERECHA----------------------------//
 	// Caminar hacia la derecha.
@@ -434,6 +446,19 @@ int** obtenerMatrizLaberinto(int N, int M, int* listmap)
 	return matrizLaberinto;
 }
 
+// Funcion que escribe los pasos.
+void escribirPasos(FILE* archivoSalida, char busqueda)
+{
+	switch(busqueda)
+	{
+		case 'EL':
+					break;
+		case 'LS':
+					break;
+	}
+}
+
+
 void escribirLaberinto(Laberinto* L)
 {
 	//Obtenemos el puntero del archivo a leer.
@@ -448,7 +473,7 @@ void escribirLaberinto(Laberinto* L)
     int i;
 	int j;
 
-	// Escribimos cada posicicion de la matriz en el archivo.
+	// Escribimos cada posicicion de la matrizEntradaLlave en el archivo.
 	for (i = 0; i < L->N; i++)
 	{
 		for (j = 0; j < L->M; j++)
@@ -458,8 +483,10 @@ void escribirLaberinto(Laberinto* L)
 		fprintf(archivoSalida,"\n");
 	}
 	fprintf(archivoSalida,"\n");
+	// Escribimos los pasos a recorrer desde la entrada a la llave.
+	escribirPasos(archivoSalida, 'EL');
 
-	// Escribimos cada posicicion de la matriz en el archivo.
+	// Escribimos cada posicicion de la matrizLlaveSalida en el archivo.
 	for (i = 0; i < L->N; i++)
 	{
 		for (j = 0; j < L->M; j++)
@@ -468,6 +495,9 @@ void escribirLaberinto(Laberinto* L)
 		}
 		fprintf(archivoSalida,"\n");
 	}
+	fprintf(archivoSalida, "\n");
+	// Escribimos los pasos a recorrer desde la llave a la salida.
+
 
 	printf("Archivo escrito Correctamente.\n");
     fclose(archivoSalida);
