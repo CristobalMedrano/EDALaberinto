@@ -53,8 +53,8 @@ typedef struct laberinto
 // Bloque de encabezados.
 int* leerArchivo(char Nombre[20], int *N, int *M);
 int** obtenerMatrizLaberinto(int N, int M, int* listmap);
-
 Laberinto* guardarDatosLaberinto(int N, int M, int** matrizLaberinto);
+
 void obtenerDatosLaberinto(int *N, int *M, int *listmap);
 void recorrerLaberinto(Laberinto* L, char busqueda);
 void mostrarEstadoLaberinto(Laberinto* nuevoLaberinto);
@@ -131,6 +131,35 @@ int** obtenerMatrizLaberinto(int N, int M, int* listmap)
 	}
 
 	return matrizLaberinto;
+}
+/**
+	@brief Funcion que guarda en la estructura laberinto, los datos del laberinto.
+	@param Filas cantidad de filas
+	@param Columnas cantidad de columnas
+	@param inLaberinto matriz con laberinto inicial.
+	@returns nuevolaberinto, del tipo Laberinto*.
+*/
+Laberinto* guardarDatosLaberinto(int Filas, int Columnas, int** inLaberinto)
+{
+	Laberinto* nuevolaberinto = (Laberinto*)malloc(sizeof(Laberinto));
+
+	int i;
+	int** inEntradaLlave = (int **)malloc(Filas * sizeof(int *));
+							for (i = 0; i < Filas; ++i)
+							inEntradaLlave[i] = (int *)malloc(Columnas * sizeof(int));
+
+	// Crear pedir memoria.
+	int** inLlaveSalida = (int **)malloc(Filas * sizeof(int *));
+							for (i = 0; i < Filas; ++i)
+							inLlaveSalida[i] = (int *)malloc(Columnas * sizeof(int));
+
+	// Guardo los datos en la estructura laberinto.
+	nuevolaberinto->N = Filas;
+	nuevolaberinto->M = Columnas;
+	nuevolaberinto->matrizLaberinto = inLaberinto;
+	nuevolaberinto->matrizEntradaLlave = inEntradaLlave;
+	nuevolaberinto->matrizLlaveSalida = inLlaveSalida;
+	return nuevolaberinto;
 }
 
 /**
@@ -552,34 +581,6 @@ void mostrarEstadoLaberinto(Laberinto* nuevoLaberinto)
 		}
 	}
 	printf("\n");
-}
-
-
-// Funcion que obtiene los datos del laberinto.
-// Retorna una struct con los datos del laberinto.
-/**
-
-*/
-Laberinto* guardarDatosLaberinto(int Filas, int Columnas, int** inLaberinto)
-{
-	Laberinto* nuevolaberinto = (Laberinto*)malloc(sizeof(Laberinto));
-
-	int** inEntradaLlave = (int **)malloc(Filas * sizeof(int *));
-							for (int i = 0; i < Filas; ++i)
-							inEntradaLlave[i] = (int *)malloc(Columnas * sizeof(int));
-
-	// Crear pedir memoria.
-	int** inLlaveSalida = (int **)malloc(Filas * sizeof(int *));
-							for (int i = 0; i < Filas; ++i)
-							inLlaveSalida[i] = (int *)malloc(Columnas * sizeof(int));
-
-	// Guardo los datos en la estructura laberinto.
-	nuevolaberinto->N = Filas;
-	nuevolaberinto->M = Columnas;
-	nuevolaberinto->matrizLaberinto = inLaberinto;
-	nuevolaberinto->matrizEntradaLlave = inEntradaLlave;
-	nuevolaberinto->matrizLlaveSalida = inLlaveSalida;
-	return nuevolaberinto;
 }
 
 
