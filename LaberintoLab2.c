@@ -26,6 +26,18 @@ typedef struct Lista
 	struct Lista *siguiente;
 } Lista;
 
+/**
+	@typedef Laberinto
+	@struct Lista
+	@brief Estructura del laberinto.
+	Recibe la cantidad de filas y columnas (N y M respectivamente)
+	Recibe una matriz que contiene el laberinto inicial
+	Recibe una matriz que contiene el laberinto desarrollado desde la entrada hasta la llave.
+	Recibe una matriz que contiene el laberinto desarrollado desde la llave a la salida.
+	Recibe un contador del camino minimo
+	Recibe un contador del camino minimo desde la entrada a la llave
+	Recibe un contador del camino minimo desde la llave a la salida 
+*/
 typedef struct laberinto
 {
 	int N; // Filas
@@ -39,9 +51,10 @@ typedef struct laberinto
 } Laberinto;
 
 // Bloque de encabezados.
-int** obtenerMatrizLaberinto(int N, int M, int* listmap);
-Laberinto* guardarDatosLaberinto(int N, int M, int** matrizLaberinto);
 int* leerArchivo(char Nombre[20], int *N, int *M);
+int** obtenerMatrizLaberinto(int N, int M, int* listmap);
+
+Laberinto* guardarDatosLaberinto(int N, int M, int** matrizLaberinto);
 void obtenerDatosLaberinto(int *N, int *M, int *listmap);
 void recorrerLaberinto(Laberinto* L, char busqueda);
 void mostrarEstadoLaberinto(Laberinto* nuevoLaberinto);
@@ -51,6 +64,74 @@ void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
 						   Laberinto* L, int busqueda);
 Lista* guardarDireccion(Laberinto* Lab, Lista* L, int i, int j, int busqueda);
 // Bloque de funciones.
+
+/**
+	@brief Funcion que lee el archivo
+	@param Nombre del archivo
+	@param N cantidad de filas
+	@param M cantidad de columnas
+	@returns listmap, que contiene el laberinto leido.
+	@returns -1 si no fue posible leer el archivo.
+*/
+int* leerArchivo(char Nombre[20], int *N, int *M)
+{
+	int* listmap; // Lista del laberinto
+
+	FILE *archivoEntrada;
+	archivoEntrada = fopen(Nombre, "r");
+	if(archivoEntrada == NULL)
+    {
+        printf("Error al abrir archivo");
+        return NULL;
+    }
+
+	fscanf(archivoEntrada,"%d",&*N);
+	fscanf(archivoEntrada,"%d",&*M);
+
+	int i = 0;
+	int Largo = (*N**M);
+	int valor = 0;
+	listmap = (int*)malloc(sizeof(int)*Largo);
+
+	while (i < Largo)
+	{
+		fscanf(archivoEntrada, " %c", &valor);
+		listmap[i] = valor;
+		i++;
+	}
+	fclose(archivoEntrada);
+	printf("Archivo leido Correctamente.\n");
+	return listmap;
+}
+
+/**
+	@brief Funcion que convierte la lista del laberinto en una matriz.
+	@param N cantidad de filas
+	@param M cantidad de columnas
+	@param listmap un puntero a la lista del laberinto.
+	@returns matrizLaberinto, la cual contiene el laberinto.
+*/
+int** obtenerMatrizLaberinto(int N, int M, int* listmap)
+{
+	// Asignamos memoria a la matriz.
+	int k;
+	int **matrizLaberinto = (int **)malloc(N * sizeof(int *));
+							for (k = 0; k < N; k++)
+							matrizLaberinto[k] = (int *)malloc(M * sizeof(int));
+	int i;
+	int j;
+	int pos = 0;
+	for(i = 0; i < N; i++)
+	{
+		for (j = 0; j < M; j++)
+		{
+			matrizLaberinto[i][j] = listmap[pos];
+			pos++;
+		}
+	}
+
+	return matrizLaberinto;
+}
 
 /**
 	@brief Funcion que crea un nodo.
@@ -476,6 +557,9 @@ void mostrarEstadoLaberinto(Laberinto* nuevoLaberinto)
 
 // Funcion que obtiene los datos del laberinto.
 // Retorna una struct con los datos del laberinto.
+/**
+
+*/
 Laberinto* guardarDatosLaberinto(int Filas, int Columnas, int** inLaberinto)
 {
 	Laberinto* nuevolaberinto = (Laberinto*)malloc(sizeof(Laberinto));
@@ -498,85 +582,6 @@ Laberinto* guardarDatosLaberinto(int Filas, int Columnas, int** inLaberinto)
 	return nuevolaberinto;
 }
 
-// Funcion que lee un archivo de texto con el laberinto.
-// Retorna una lista con el laberinto.
-int* leerArchivo(char Nombre[20], int *N, int *M)
-{
-	int* listmap; // Lista del laberinto
-
-	FILE *archivoEntrada;
-	archivoEntrada = fopen(Nombre, "r");
-	if(archivoEntrada == NULL)
-    {
-        printf("Error al abrir archivo");
-    }
-
-	fscanf(archivoEntrada,"%d",&*N);
-	fscanf(archivoEntrada,"%d",&*M);
-
-	#ifdef DEBUG
-	printf("Soy n%d\n", *N);
-	printf("Soy m%d\n", *M);
-	#endif
-
-	int i = 0;
-	int Largo = (*N**M);
-	int valor = 0;
-	listmap = (int*)malloc(sizeof(int)*Largo);
-
-	while (i < Largo)
-	{
-		fscanf(archivoEntrada, " %c", &valor);
-		listmap[i] = valor;
-
-		#ifdef DEBUG
-			printf("Soy valor %d\n", valor);
-			printf("Soy lista %d\n", listmap[i]);
-		#endif
-
-		i++;
-	}
-	fclose(archivoEntrada);
-
-	#ifdef DEBUG
-	for (int i = 0; i < Largo; i++)
-	{
-		printf("Valor en la pos:%d dato:%c\n", i, listmap[i]);
-	}
-	#endif
-	printf("Archivo leido Correctamente.\n");
-	return listmap;
-}
-
-// Funcion que recibe como entrada la cantidad de filas,columnas y lista
-// del laberinto.
-// Retorna una lista de listas con el laberinto convertido.
-int** obtenerMatrizLaberinto(int N, int M, int* listmap)
-{
-	// Asignamos memoria a la matriz.
-	int **matrizLaberinto = (int **)malloc(N * sizeof(int *));
-							for (int i = 0; i < N; ++i)
-							matrizLaberinto[i] = (int *)malloc(M * sizeof(int));
-	int i;
-	int j;
-	int pos = 0;
-	for(i = 0; i < N; i++)
-	{
-		for (j = 0; j < M; j++)
-		{
-			matrizLaberinto[i][j] = listmap[pos];
-			pos++;
-			#ifdef DEBUG
-				printf("%d",matrizLaberinto[i][j]);
-			#endif
-		}
-		#ifdef DEBUG
-		printf("\n");
-		#endif
-	}
-
-	return matrizLaberinto;
-}
 
 // Funcion que encuentra las posiciones con letras.
 Lista* buscarPosiciones(Laberinto* Lab, int busqueda)
