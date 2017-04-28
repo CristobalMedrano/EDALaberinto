@@ -1,3 +1,14 @@
+/**
+	@file LaberintoLab2.c
+	@brief Programa que resuelve laberintos.
+
+	Programa que hace uso de listas enlazadas
+	Busca el camino minimo dentro del laberinto
+
+	@author Cristobal Medrano Alvarado - 19083864-1
+	@date 27/04/2017
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -54,14 +65,22 @@ typedef struct laberinto
 int* leerArchivo(char Nombre[20], int *N, int *M);
 int** obtenerMatrizLaberinto(int N, int M, int* listmap);
 Laberinto* guardarDatosLaberinto(int N, int M, int** matrizLaberinto);
-
-void obtenerDatosLaberinto(int *N, int *M, int *listmap);
 void recorrerLaberinto(Laberinto* L, char busqueda);
-void mostrarEstadoLaberinto(Laberinto* nuevoLaberinto);
 void buscarPuerta(int *datoX, int *datoY, Laberinto* L, char letra);
 int** obtenerMatrizTemporal(Laberinto* L);
 void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
 						   Laberinto* L, int busqueda);
+int conCamino(Laberinto* L, int** cRecorrido);
+void guardarCaminoMin(Laberinto* L, int** cRecorrido, int caminoMin, int busqueda);
+Lista* crearNodo();
+Lista* InsertarFinal(Lista* L, int dato);
+int obtener(Lista* L, int pos);
+int largo(Lista* L);
+Lista* buscarPosiciones(Laberinto* Lab, int busqueda);
+Lista* guardarDireccion(Laberinto* Lab, Lista* L, int i, int j, int busqueda);
+
+
+
 Lista* guardarDireccion(Laberinto* Lab, Lista* L, int i, int j, int busqueda);
 // Bloque de funciones.
 
@@ -161,117 +180,11 @@ Laberinto* guardarDatosLaberinto(int Filas, int Columnas, int** inLaberinto)
 	nuevolaberinto->matrizLlaveSalida = inLlaveSalida;
 	return nuevolaberinto;
 }
-
 /**
-	@brief Funcion que crea un nodo.
-	@param dato es el elemento a guardar en la lista.
-	@returns Lista (puntero), si fue creada exitosamente.
-	@returns NULL, si no fue creada.
+	@brief Procedimiento que obtiene los datos inciales para recorrer.
+	@param L es el puntero de la estructura Laberinto
+	@param busqueda es el elemento a buscar en el laberinto.
 */
-Lista* crearNodo()
-{
-	Lista *lista = (Lista *)malloc(sizeof(Lista));
-	//Si la asignacion de memoria es exitosa, se inicializan las variables
-	if(lista!=NULL){
-	    lista->dato = 0;
-		lista->siguiente = NULL;
-		return lista;
-	}
-	else{
-		return NULL;
-	}
-}
-/**
-	@brief Funcion que inserta un elemento al final de la lista.
-	@param L es una Lista de nodos.
-	@param dato es el elemento a guardar en la lista.
-	@returns Lista (puntero), con los datos actualizados.
-*/
-Lista* InsertarFinal(Lista* L, int dato)
-{
-	//Se crea una nueva lista
-	Lista *nuevo = crearNodo();
-	Lista *aux = crearNodo();
-	//Se comprueba si se realiza con exito
-	//Si la lista es creada con exito
-	if(nuevo!=NULL){
-        //Se ve si L esta vacia
-        if (L==NULL){
-            //En ese caso, L sera igual a la nueva lista que creamos
-        	L = nuevo;
-            nuevo->dato = dato;
-            nuevo->siguiente = NULL;
-            return L;
-        }
-        else
-        { 
-        	// Aux sera igual a L.
-        	aux = L;
-        	// Ubicamos el puntero en el ultimo nodo.
-        	while(aux->siguiente != NULL)
-        	{
-        		aux = aux->siguiente;
-        	}
-        	// Asignamos la ultima posicion al nuevo nodo.
-        	aux->siguiente = nuevo;
-        	nuevo->dato = dato;
-        	nuevo->siguiente = NULL;
-        	// Retornamos la lista.
-        	return L;
-        }
-
-	}
-	//En caso que la asignacion de memoria falle, se avisa del error y se retorna la lista L
-	else{
-        printf("Error en la asignacion de memoria\n");
-        return L;
-    }
-}
-/**
-	@brief Funcion que obtiene un elemento de la lista, segun la posicion.
-	@param L lista con los nodos.
-	@param pos posicion del elemento a buscar.
-	@returns elemento si la ejecucion fue correcta.
-	@returns -1 si la posicion es invalida.
-*/
-int obtener(Lista* L, int pos)
-{
-	int i;
-	if(pos < 0)
-	{
-		return -1;
-	}
-	i = 0;
-	Lista* indice = L;
-	while(indice != NULL && i < pos)
-	{
-		indice = indice->siguiente;
-		i++;
-	}
-	if(indice == NULL)
-	{
-		return -1;
-	}
-	return indice->dato;
-}
-/**
-	@brief Funcion que obtiene el largo de la lista.
-	@param L lista con los nodos.
-	@returns int con el largo de la lista.
-*/
-int largo(Lista* L)
-{
-	int i = 0;
-	Lista* indice = L;
-	while(indice != NULL)
-	{
-		indice = indice->siguiente;
-		i++;
-	}
-	return i;
-}
-
-//Funcion que recorre el laberinto
 void recorrerLaberinto(Laberinto* L, char busqueda)
 {
 	int Ex = 0; // Entrada en X.
@@ -302,6 +215,7 @@ void recorrerLaberinto(Laberinto* L, char busqueda)
 					Pfy = Sy;
 					break;
 	}
+	
 	int** cRecorrido = obtenerMatrizTemporal(L);
 	direccionarLaberinto(Pix, Piy, Pfx, Pfy, cRecorrido, L, busqueda);
 	// Ubicamos la posicion de la Entrada y Salida para una mejor lectura.
@@ -315,7 +229,149 @@ void recorrerLaberinto(Laberinto* L, char busqueda)
 					 break;
 	}
 }
+/**
+	@brief Procedimiento que busca las coordenadas de un caracter en especifico.
+	@param datoX posicion del dato en X.
+	@param datoY posicion del dato en Y.
+	@param L puntero a la estructura Laberinto, para obtener datos en el.
+	@param letra caracter a buscar.
+*/
+void buscarPuerta(int *datoX, int *datoY, Laberinto* L, char letra)
+{
+	int i;
+	int j;
+	for (i = 0; i < L->N; i++)
+	{
+		for (j = 0; j < L->M; j++)
+		{
+			if ((L->matrizLaberinto[i][j]) == letra)
+			{
+				*datoX = i;
+				*datoY = j;
+			}
+		}
+	}
+}
+/**
+	@brief Funcion que genera una matriz temporal sin caracteres de entrada, llave o salida en ella.
+	@param L, puntero a la estructura Laberinto con el fin de obtener el laberinto principal.
+	@return cRecorrido, matriz temporal solo con caracteres * y .
+*/
+int** obtenerMatrizTemporal(Laberinto* L)
+{
+	int i;
+	int j;
+	int** cRecorrido = (int **)malloc(L->N * sizeof(int *));
+						 for (i = 0; i < L->N; ++i)
+						 cRecorrido[i] = (int *)malloc(L->M * sizeof(int));
+	
+	for (i = 0; i < L->N; ++i)
+	{
+		for (j = 0; j < L->M; ++j)
+		{
+			cRecorrido[i][j] = L->matrizLaberinto[i][j];
+			switch (cRecorrido[i][j]) 
+			{
+				case 'E' : cRecorrido[i][j] = '.';
+						   break;
+				case 'K' : cRecorrido[i][j] = '.';
+						   break;
+				case 'S' : cRecorrido[i][j] = '.';
+						   break;
+			}
+		}
+	}
+	return cRecorrido;
+}
+/**
+	@brief Procedimiento que busca todas las soluciones del laberinto.
+	@param Pix Posicion de entrada en x.
+	@param Piy Posicion de entrada en y.
+	@param Pfx Posicion de salida en x.
+	@param Pfy Posicion de salida en y.
+	@param cRecorrido matriz temporal que guarda el recorrido.
+	@param L puntero a la estructura Laberinto, para obtener y guardar datos en el.
+	@param busqueda elemento a buscar en el laberinto.
 
+*/
+void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
+						   Laberinto* L, int busqueda)
+{
+	if(Pix == Pfx && Piy == Pfy)
+	{
+		// Contamos la cantidad de pasos a recorrer.
+		int caminoMin = conCamino(L, cRecorrido);
+		// Comparamos la cantidad de pasos obtenida y seleccionamos la mas corta.
+		guardarCaminoMin(L, cRecorrido, caminoMin, busqueda);
+		// Guardamos las direcciones 
+		
+	}
+	// ----------------------DERECHA----------------------------//
+	// Caminar hacia la derecha.
+	
+	if (Piy <= L->M-2 && cRecorrido[Pix][Piy+1] != '*' && cRecorrido[Pix][Piy+1] != 'x')
+	{
+		cRecorrido[Pix][Piy] = 'x';
+		direccionarLaberinto(Pix, Piy+1, Pfx, Pfy, cRecorrido, L, busqueda);
+	}
+	// Cruzar hacia la derecha (Pac-Man).
+	if (Piy == L->M-1 && cRecorrido[Pix][Piy] != '*' && cRecorrido[Pix][Piy] != 'x')
+	{	
+		cRecorrido[Pix][L->M-1] = 'x';
+		cRecorrido[Pix][0] = 'x';
+		direccionarLaberinto(Pix, Piy-(L->M-1), Pfx, Pfy, cRecorrido, L, busqueda);
+	}
+	// ----------------------ABAJO----------------------------//
+	// Caminar hacia abajo.
+	if (Pix <= L->N-2 && cRecorrido[Pix+1][Piy] != '*' && cRecorrido[Pix+1][Piy] != 'x')
+	{
+		cRecorrido[Pix][Piy] = 'x';
+		direccionarLaberinto(Pix+1, Piy, Pfx, Pfy, cRecorrido, L, busqueda);
+	}	
+	// Cruzar hacia abajo (Pac-Man)	
+	if (Pix == L->N-1 && cRecorrido[Pix][Piy] != '*' && cRecorrido[Pix][Piy] != 'x')
+	{
+		cRecorrido[L->N-1][Piy] = 'x';
+		cRecorrido[0][Piy] = 'x';
+		direccionarLaberinto(Pix-(L->N-1), Piy, Pfx, Pfy, cRecorrido, L, busqueda);
+	}
+	// ----------------------IZQUIERDA----------------------------//
+	// Caminar hacia izquierda.
+	if (Piy >= 1 && cRecorrido[Pix][Piy-1] != '*' && cRecorrido[Pix][Piy-1] != 'x')
+	{
+		cRecorrido[Pix][Piy] = 'x';
+		direccionarLaberinto(Pix, Piy-1, Pfx, Pfy, cRecorrido, L, busqueda);
+	}
+	// Cruzar hacia izquierda (Pac-Man)
+	if (Piy == 0 && cRecorrido[Pix][Piy] != '*' && cRecorrido[Pix][Piy] != 'x')
+	{
+		cRecorrido[Pix][0] = 'x';
+		cRecorrido[Pix][L->M-1] = 'x';
+		direccionarLaberinto(Pix, Piy+(L->M-1), Pfx, Pfy, cRecorrido, L, busqueda);
+	}
+	// ----------------------ARRIBA----------------------------//
+	// Caminar hacia arriba.
+	if (Pix >= 1 && cRecorrido[Pix-1][Piy] != '*' && cRecorrido[Pix-1][Piy] != 'x')
+	{
+		cRecorrido[Pix][Piy] = 'x';
+		direccionarLaberinto(Pix-1, Piy, Pfx, Pfy, cRecorrido, L, busqueda);
+	}
+	// Cruzar hacia arriba (Pac-Man)
+	if (Pix == 0 && cRecorrido[Pix][Piy] != '*' && cRecorrido[Pix][Piy] != 'x')
+	{
+		cRecorrido[0][Piy] = 'x';
+		cRecorrido[L->N-1][Piy] = 'x';
+		direccionarLaberinto(Pix+(L->N-1), Piy, Pfx, Pfy, cRecorrido, L, busqueda);
+	}
+	// ----------------------DEVOLVER----------------------------//
+	cRecorrido[Pix][Piy] = '.';
+}
+/**
+	@brief Funcion que lee la cantidad de camino recorrido.
+	@param L puntero a la estructura Laberinto, para obtener datos.
+	@param cRecorrido matriz temporal que aloja el recorrido del laberinto.
+	@returns caminoMin, que contiene la cantidad total de pasos a recorrer.
+*/
 int conCamino(Laberinto* L, int** cRecorrido)
 {
 	int caminoMin = 0;
@@ -331,7 +387,12 @@ int conCamino(Laberinto* L, int** cRecorrido)
 	}
 	return caminoMin;
 }
-
+/**
+	@brief Procedimiento que guarda el camino minimo en la estructura Laberinto.
+	@param L contiene los datos de la estructura Laberinto.
+	@param caminoMin contiene la cantidad de camino a recorrer.
+	@param busqueda caracter a buscar en la funcion, sirve para diferenciar donde guardar los datos. 
+*/
 void guardarCaminoMin(Laberinto* L, int** cRecorrido, int caminoMin, int busqueda)
 {
 	// Guardamos el camino minimo.
@@ -355,236 +416,13 @@ void guardarCaminoMin(Laberinto* L, int** cRecorrido, int caminoMin, int busqued
 		}
 	}
 }
-
-void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
-						   Laberinto* L, int busqueda)
-{
-	if(Pix == Pfx && Piy == Pfy)
-	{
-		// Contamos la cantidad de pasos a recorrer.
-		int caminoMin = conCamino(L, cRecorrido);
-		// Comparamos la cantidad de pasos obtenida y seleccionamos la mas corta.
-		guardarCaminoMin(L, cRecorrido, caminoMin, busqueda);
-		// Guardamos las direcciones 
-		
-	}
-	// ----------------------DERECHA----------------------------//
-	// Caminar hacia la derecha.
-	
-	if (Piy <= L->M-2 && cRecorrido[Pix][Piy+1] != '*' && cRecorrido[Pix][Piy+1] != 'x')
-	{
-		cRecorrido[Pix][Piy] = 'x';
-
-		#ifdef DEBUG
-			for (int i = 0; i < L->N; ++i)
-			{
-				for (int j = 0; j < L->M; ++j)
-				{
-					printf("%c", cRecorrido[i][j]);
-				}
-				printf("\n");
-			}
-			printf("\n");
-		#endif
-
-		direccionarLaberinto(Pix, Piy+1, Pfx, Pfy, cRecorrido, L, busqueda);
-	}
-	// Cruzar hacia la derecha (Pac-Man).
-	if (Piy == L->M-1 && cRecorrido[Pix][Piy] != '*' && cRecorrido[Pix][Piy] != 'x')
-	{	
-		cRecorrido[Pix][L->M-1] = 'x';
-		cRecorrido[Pix][0] = 'x';
-		#ifdef DEBUG
-			for (int i = 0; i < L->N; ++i)
-			{
-				for (int j = 0; j < L->M; ++j)
-				{
-					printf("%c", cRecorrido[i][j]);
-				}
-				printf("\n");
-			}
-			printf("\n");
-		#endif
-		direccionarLaberinto(Pix, Piy-(L->M-1), Pfx, Pfy, cRecorrido, L, busqueda);
-	}
-	// ----------------------ABAJO----------------------------//
-	// Caminar hacia abajo.
-	if (Pix <= L->N-2 && cRecorrido[Pix+1][Piy] != '*' && cRecorrido[Pix+1][Piy] != 'x')
-	{
-		cRecorrido[Pix][Piy] = 'x';
-		#ifdef DEBUG
-			for (int i = 0; i < L->N; ++i)
-			{
-				for (int j = 0; j < L->M; ++j)
-				{
-					printf("%c", cRecorrido[i][j]);
-				}
-				printf("\n");
-			}
-			printf("\n");
-		#endif
-		direccionarLaberinto(Pix+1, Piy, Pfx, Pfy, cRecorrido, L, busqueda);
-	}	
-	// Cruzar hacia abajo (Pac-Man)	
-	if (Pix == L->N-1 && cRecorrido[Pix][Piy] != '*' && cRecorrido[Pix][Piy] != 'x')
-	{
-		cRecorrido[L->N-1][Piy] = 'x';
-		cRecorrido[0][Piy] = 'x';
-		#ifdef DEBUG
-			for (int i = 0; i < L->N; ++i)
-			{
-				for (int j = 0; j < L->M; ++j)
-				{
-					printf("%c", cRecorrido[i][j]);
-				}
-				printf("\n");
-			}
-			printf("\n");
-		#endif
-		direccionarLaberinto(Pix-(L->N-1), Piy, Pfx, Pfy, cRecorrido, L, busqueda);
-	}
-	// ----------------------IZQUIERDA----------------------------//
-	// Caminar hacia izquierda.
-	if (Piy >= 1 && cRecorrido[Pix][Piy-1] != '*' && cRecorrido[Pix][Piy-1] != 'x')
-	{
-		cRecorrido[Pix][Piy] = 'x';
-		#ifdef DEBUG
-			for (int i = 0; i < L->N; ++i)
-			{
-				for (int j = 0; j < L->M; ++j)
-				{
-					printf("%c", cRecorrido[i][j]);
-				}
-				printf("\n");
-			}
-			printf("\n");
-		#endif
-		direccionarLaberinto(Pix, Piy-1, Pfx, Pfy, cRecorrido, L, busqueda);
-	}
-	// Cruzar hacia izquierda (Pac-Man)
-	if (Piy == 0 && cRecorrido[Pix][Piy] != '*' && cRecorrido[Pix][Piy] != 'x')
-	{
-		cRecorrido[Pix][0] = 'x';
-		cRecorrido[Pix][L->M-1] = 'x';
-		#ifdef DEBUG
-			for (int i = 0; i < L->N; ++i)
-			{
-				for (int j = 0; j < L->M; ++j)
-				{
-					printf("%c", cRecorrido[i][j]);
-				}
-				printf("\n");
-			}
-			printf("\n");
-		#endif
-		direccionarLaberinto(Pix, Piy+(L->M-1), Pfx, Pfy, cRecorrido, L, busqueda);
-	}
-	// ----------------------ARRIBA----------------------------//
-	// Caminar hacia arriba.
-	if (Pix >= 1 && cRecorrido[Pix-1][Piy] != '*' && cRecorrido[Pix-1][Piy] != 'x')
-	{
-		cRecorrido[Pix][Piy] = 'x';
-		#ifdef DEBUG
-			for (int i = 0; i < L->N; ++i)
-			{
-				for (int j = 0; j < L->M; ++j)
-				{
-					printf("%c", cRecorrido[i][j]);
-				}
-				printf("\n");
-			}
-			printf("\n");
-		#endif
-		direccionarLaberinto(Pix-1, Piy, Pfx, Pfy, cRecorrido, L, busqueda);
-	}
-	// Cruzar hacia arriba (Pac-Man)
-	if (Pix == 0 && cRecorrido[Pix][Piy] != '*' && cRecorrido[Pix][Piy] != 'x')
-	{
-		cRecorrido[0][Piy] = 'x';
-		cRecorrido[L->N-1][Piy] = 'x';
-		#ifdef DEBUG
-			for (int i = 0; i < L->N; ++i)
-			{
-				for (int j = 0; j < L->M; ++j)
-				{
-					printf("%c", cRecorrido[i][j]);
-				}
-				printf("\n");
-			}
-			printf("\n");
-		#endif
-		direccionarLaberinto(Pix+(L->N-1), Piy, Pfx, Pfy, cRecorrido, L, busqueda);
-	}
-	// ----------------------DEVOLVER----------------------------//
-	cRecorrido[Pix][Piy] = '.';
-}
-
-int** obtenerMatrizTemporal(Laberinto* L)
-{
-	int** cRecorrido = (int **)malloc(L->N * sizeof(int *));
-						 for (int i = 0; i < L->N; ++i)
-						 cRecorrido[i] = (int *)malloc(L->M * sizeof(int));
-	
-	for (int i = 0; i < L->N; ++i)
-	{
-		for (int j = 0; j < L->M; ++j)
-		{
-			cRecorrido[i][j] = L->matrizLaberinto[i][j];
-			switch (cRecorrido[i][j]) 
-			{
-				case 'E' : cRecorrido[i][j] = '.';
-						   break;
-				case 'K' : cRecorrido[i][j] = '.';
-						   break;
-				case 'S' : cRecorrido[i][j] = '.';
-						   break;
-			}
-		}
-	}
-	return cRecorrido;
-}
-
-
-// Busco la posicion de un caracter en especifico.
-void buscarPuerta(int *datoX, int *datoY, Laberinto* L, char letra)
-{
-	int i;
-	int j;
-	for (i = 0; i < L->N; i++)
-	{
-		for (j = 0; j < L->M; j++)
-		{
-			if ((L->matrizLaberinto[i][j]) == letra)
-			{
-				*datoX = i;
-				*datoY = j;
-
-				#ifdef DEBUG
-				printf("%d,%d\n", *datoX, *datoY);
-				#endif
-			}
-		}
-	}
-}
-
-// Funcion que muestra el estado actual del laberinto. MODIFICAR
-void mostrarEstadoLaberinto(Laberinto* nuevoLaberinto)
-{
-	int i;
-	int j;
-	for (i = 0; i < nuevoLaberinto->N; i++)
-	{
-		printf("\n");
-		for (j = 0; j < nuevoLaberinto->M; j++)
-		{
-			printf("%c", nuevoLaberinto->matrizLaberinto[i][j]);
-		}
-	}
-	printf("\n");
-}
-
-
 // Funcion que encuentra las posiciones con letras.
+/**
+	@brief Funcion que encuentra las posiciones de las letras.
+	@param Lab, puntero a la estructura Laberinto.
+	@param busqueda, elemento a buscar en la matriz.
+	@returns L, Lista enlazada que contiene el camino a recorrer en palabras.
+*/
 Lista* buscarPosiciones(Laberinto* Lab, int busqueda)
 {
 	int Ex = 0; // Entrada en X.
@@ -622,9 +460,17 @@ Lista* buscarPosiciones(Laberinto* Lab, int busqueda)
 	int j= Piy;
 	L = guardarDireccion(Lab, L, i, j, busqueda);
 	return L;
-
 }
 
+/**
+	@brief Funcion que guarda la direccion a caminar en la lista enlazada.
+	@param Lab, puntero a la estructura laberinto para obtener datos de ella.
+	@param L, puntero a la Lista enlazada que contendra los pasos.
+	@param i, posicion inicial en x.
+	@param j, posicion inicial en y.
+	@param busqueda, filtro de busqueda.
+	@returns L con el paso a paso para recorrer el laberinto.
+*/
 Lista* guardarDireccion(Laberinto* Lab, Lista* L, int i, int j, int busqueda)
 {
 	int cont= 0;
@@ -800,11 +646,63 @@ Lista* guardarDireccion(Laberinto* Lab, Lista* L, int i, int j, int busqueda)
 			}
 		}
 	}
-	return L;
-	
+	return L;	
 }
 
-// Funcion que escribe los pasos.
+/**
+	@brief Procedimiento que escribe la solucion del laberinto en un archivo.
+	@param L, puntero a la estructura Laberinto que contiene los datos a guardar.
+*/
+void escribirLaberinto(Laberinto* L)
+{
+	//Obtenemos el puntero del archivo a leer.
+	FILE *archivoSalida;
+	// Abrimos el archivo a guardar.
+	archivoSalida = fopen("Salida.out", "w");
+    // Notificamos error en caso de no poder abrir el archivo.
+    if(archivoSalida == NULL)
+    {
+        printf("Error al abrir archivo");
+    }
+    int i;
+	int j;
+
+	// Escribimos cada posicicion de la matrizEntradaLlave en el archivo.
+	for (i = 0; i < L->N; i++)
+	{
+		for (j = 0; j < L->M; j++)
+		{
+			fprintf(archivoSalida, "%c", L->matrizEntradaLlave[i][j]);
+		}
+		fprintf(archivoSalida,"\n");
+	}
+	// Escribimos los pasos a recorrer desde la entrada a la llave.
+	fprintf(archivoSalida, "\n");
+	escribirPasos(archivoSalida, LLAVE, L);
+	fprintf(archivoSalida, "\n");
+
+	// Escribimos cada posicicion de la matrizLlaveSalida en el archivo.
+	for (i = 0; i < L->N; i++)
+	{
+		for (j = 0; j < L->M; j++)
+		{
+			fprintf(archivoSalida, "%c", L->matrizLlaveSalida[i][j]);
+		}
+		fprintf(archivoSalida,"\n");
+	}
+	// Escribimos los pasos a recorrer desde la llave a la salida.
+	fprintf(archivoSalida, "\n");
+	escribirPasos(archivoSalida, SALIDA, L);
+
+	printf("Archivo escrito Correctamente.\n");
+    fclose(archivoSalida);
+}
+/**
+	@brief Procedimiento que escribe el paso a paso en el archivo de salida.
+	@param archivoSalida, puntero al archivo de salida
+	@param busqueda, filtro para diferenciar el tipo de dato a guardar.
+	@param L, puntero a la estructura laberinto que contiene los datos a guardar.
+*/
 void escribirPasos(FILE* archivoSalida, int busqueda, Laberinto* L)
 {
 	Lista* lista = buscarPosiciones(L, busqueda);
@@ -850,85 +748,153 @@ void escribirPasos(FILE* archivoSalida, int busqueda, Laberinto* L)
 						}
 						break;
 		}
-	}
-	
+	}	
 }
-
-void escribirLaberinto(Laberinto* L)
+/**
+	@brief Funcion que crea un nodo.
+	@param dato es el elemento a guardar en la lista.
+	@returns Lista (puntero), si fue creada exitosamente.
+	@returns NULL, si no fue creada.
+*/
+Lista* crearNodo()
 {
-	//Obtenemos el puntero del archivo a leer.
-	FILE *archivoSalida;
-	// Abrimos el archivo a guardar.
-	archivoSalida = fopen("Salida.out", "w");
-    // Notificamos error en caso de no poder abrir el archivo.
-    if(archivoSalida == NULL)
-    {
-        printf("Error al abrir archivo");
+	Lista *lista = (Lista *)malloc(sizeof(Lista));
+	//Si la asignacion de memoria es exitosa, se inicializan las variables
+	if(lista!=NULL){
+	    lista->dato = 0;
+		lista->siguiente = NULL;
+		return lista;
+	}
+	else{
+		return NULL;
+	}
+}
+/**
+	@brief Funcion que inserta un elemento al final de la lista.
+	@param L es una Lista de nodos.
+	@param dato es el elemento a guardar en la lista.
+	@returns Lista (puntero), con los datos actualizados.
+*/
+Lista* InsertarFinal(Lista* L, int dato)
+{
+	//Se crea una nueva lista
+	Lista *nuevo = crearNodo();
+	Lista *aux = crearNodo();
+	//Se comprueba si se realiza con exito
+	//Si la lista es creada con exito
+	if(nuevo!=NULL){
+        //Se ve si L esta vacia
+        if (L==NULL){
+            //En ese caso, L sera igual a la nueva lista que creamos
+        	L = nuevo;
+            nuevo->dato = dato;
+            nuevo->siguiente = NULL;
+            return L;
+        }
+        else
+        { 
+        	// Aux sera igual a L.
+        	aux = L;
+        	// Ubicamos el puntero en el ultimo nodo.
+        	while(aux->siguiente != NULL)
+        	{
+        		aux = aux->siguiente;
+        	}
+        	// Asignamos la ultima posicion al nuevo nodo.
+        	aux->siguiente = nuevo;
+        	nuevo->dato = dato;
+        	nuevo->siguiente = NULL;
+        	// Retornamos la lista.
+        	return L;
+        }
+
+	}
+	//En caso que la asignacion de memoria falle, se avisa del error y se retorna la lista L
+	else{
+        printf("Error en la asignacion de memoria\n");
+        return L;
     }
-    int i;
-	int j;
-
-	// Escribimos cada posicicion de la matrizEntradaLlave en el archivo.
-	for (i = 0; i < L->N; i++)
+}
+/**
+	@brief Funcion que obtiene un elemento de la lista, segun la posicion.
+	@param L lista con los nodos.
+	@param pos posicion del elemento a buscar.
+	@returns elemento si la ejecucion fue correcta.
+	@returns -1 si la posicion es invalida.
+*/
+int obtener(Lista* L, int pos)
+{
+	int i;
+	if(pos < 0)
 	{
-		for (j = 0; j < L->M; j++)
-		{
-			fprintf(archivoSalida, "%c", L->matrizEntradaLlave[i][j]);
-		}
-		fprintf(archivoSalida,"\n");
+		return -1;
 	}
-	// Escribimos los pasos a recorrer desde la entrada a la llave.
-	fprintf(archivoSalida, "\n");
-	escribirPasos(archivoSalida, LLAVE, L);
-	fprintf(archivoSalida, "\n");
-
-	// Escribimos cada posicicion de la matrizLlaveSalida en el archivo.
-	for (i = 0; i < L->N; i++)
+	i = 0;
+	Lista* indice = L;
+	while(indice != NULL && i < pos)
 	{
-		for (j = 0; j < L->M; j++)
-		{
-			fprintf(archivoSalida, "%c", L->matrizLlaveSalida[i][j]);
-		}
-		fprintf(archivoSalida,"\n");
+		indice = indice->siguiente;
+		i++;
 	}
-	// Escribimos los pasos a recorrer desde la llave a la salida.
-	fprintf(archivoSalida, "\n");
-	escribirPasos(archivoSalida, SALIDA, L);
-
-	printf("Archivo escrito Correctamente.\n");
-    fclose(archivoSalida);
+	if(indice == NULL)
+	{
+		return -1;
+	}
+	return indice->dato;
+}
+/**
+	@brief Funcion que obtiene el largo de la lista.
+	@param L lista con los nodos.
+	@returns int con el largo de la lista.
+*/
+int largo(Lista* L)
+{
+	int i = 0;
+	Lista* indice = L;
+	while(indice != NULL)
+	{
+		indice = indice->siguiente;
+		i++;
+	}
+	return i;
 }
 
-// Funcion main.
+
+ /**
+	@brief Funcion main que ejecuta cada una de las funciones.
+	@returns 0 si su ejecucion fue correcta.
+ */
 
 int main(int argc, char const *argv[])
 {
 	int N;
 	int M;
 	int* listmap = leerArchivo("Entrada.in", &N, &M);
-	int** matrizLaberinto;
-	printf("\n //---- Iniciando Solucionador. ----// \n");
-	
-	// Creamos una matriz para el laberinto.
-	matrizLaberinto = obtenerMatrizLaberinto(N, M, listmap);
-	
-	// Guardamos los datos del laberinto en una struct Laberinto.
-	Laberinto* L = guardarDatosLaberinto(N, M, matrizLaberinto);
+	if(listmap != NULL)
+	{
+		int** matrizLaberinto;
+		printf("\n //---- Iniciando Solucionador. ----// \n");
 		
-	// Recorremos la matriz del laberinto buscando la LLAVE.
-	L->contCaminoMinimo = N*M;
-	recorrerLaberinto(L, LLAVE);
-	printf("Llave encontrada.\n");
-	
-	// Recorremos la matriz del laberinto buscando la SALIDA.
-	L->contCaminoMinimo = N*M;
-	recorrerLaberinto(L, SALIDA);
-	printf("Salida encontrada.\n");
+		// Creamos una matriz para el laberinto.
+		matrizLaberinto = obtenerMatrizLaberinto(N, M, listmap);
+		
+		// Guardamos los datos del laberinto en una struct Laberinto.
+		Laberinto* L = guardarDatosLaberinto(N, M, matrizLaberinto);
+			
+		// Recorremos la matriz del laberinto buscando la LLAVE.
+		L->contCaminoMinimo = N*M;
+		recorrerLaberinto(L, LLAVE);
+		printf("--- Llave encontrada. ---\n");
+		
+		// Recorremos la matriz del laberinto buscando la SALIDA.
+		L->contCaminoMinimo = N*M;
+		recorrerLaberinto(L, SALIDA);
+		printf("Salida encontrada.\n");
 
-	// Escribimos la solucion del laberinto en un archivo. 
-	// "Salida.out".
-	escribirLaberinto(L);
-
+		// Escribimos la solucion del laberinto en un archivo. 
+		// "Salida.out".
+		escribirLaberinto(L);
+	}
 	printf("//---- Solucionador Terminado. ----//\n");
 	return TRUE;
 }
