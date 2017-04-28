@@ -2,8 +2,9 @@
 	@file LaberintoLab2.c
 	@brief Programa que resuelve laberintos.
 
-	Programa que hace uso de listas enlazadas
-	Busca el camino minimo dentro del laberinto
+	Programa que hace uso de listas enlazadas.
+	Busca el camino minimo dentro del laberinto.
+	Escribe la solucion en un archivo con el paso a paso.
 
 	@author Cristobal Medrano Alvarado - 19083864-1
 	@date 27/04/2017
@@ -13,7 +14,6 @@
 #include <stdlib.h>
 
 // Bloque de define.
-#define DEBUG2
 #define TRUE 1
 #define FALSE 0
 #define LLAVE 0
@@ -72,16 +72,16 @@ void direccionarLaberinto(int Pix, int Piy, int Pfx, int Pfy, int** cRecorrido,
 						   Laberinto* L, int busqueda);
 int conCamino(Laberinto* L, int** cRecorrido);
 void guardarCaminoMin(Laberinto* L, int** cRecorrido, int caminoMin, int busqueda);
+Lista* buscarPosiciones(Laberinto* Lab, int busqueda);
+Lista* guardarDireccion(Laberinto* Lab, Lista* L, int i, int j, int busqueda);
+void escribirLaberinto(Laberinto* L);
+void escribirPasos(FILE* archivoSalida, int busqueda, Laberinto* L);
+void escribirLaberinto(Laberinto* L);
 Lista* crearNodo();
 Lista* InsertarFinal(Lista* L, int dato);
 int obtener(Lista* L, int pos);
 int largo(Lista* L);
-Lista* buscarPosiciones(Laberinto* Lab, int busqueda);
-Lista* guardarDireccion(Laberinto* Lab, Lista* L, int i, int j, int busqueda);
 
-
-
-Lista* guardarDireccion(Laberinto* Lab, Lista* L, int i, int j, int busqueda);
 // Bloque de funciones.
 
 /**
@@ -889,7 +889,7 @@ int main(int argc, char const *argv[])
 		// Recorremos la matriz del laberinto buscando la SALIDA.
 		L->contCaminoMinimo = N*M;
 		recorrerLaberinto(L, SALIDA);
-		printf("Salida encontrada.\n");
+		printf("--- Salida encontrada. ---\n");
 
 		// Escribimos la solucion del laberinto en un archivo. 
 		// "Salida.out".
