@@ -1,7 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "Ejecucion.h"
-#include "Lectura.h"
 #include "Menu.h"
 
 void mostrarMenuPrincipal()
