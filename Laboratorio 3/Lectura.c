@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "Ejecucion.h"
 #include "Lectura.h"
+#include "Menu.h"
 
 /**
 	@brief Funcion que obtiene el nombre del archivo ingresado por el usuario.

@@ -8,6 +8,5 @@
 void mostrarMenuPrincipal();
 void mostrarMenuSeleccion();
 int obtenerOpcionIngresada(int valMin, int valMax);
-int menuPrincipal();
 int obtenerSeleccionMenu();
 #endif

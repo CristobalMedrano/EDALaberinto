@@ -1,7 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "Menu.h"
+#include "Ejecucion.h"
 #include "Lectura.h"
+#include "Menu.h"
 
 void mostrarMenuPrincipal()
 {
@@ -33,7 +34,7 @@ int obtenerOpcionIngresada(int valMin, int valMax)
 		{
 		    while (getchar() != '\n');
 		    printf("\n- Error. Ingrese una opcion valida.\n\n");
-		    
+		    mostrarMenuSeleccion();
 		    fflush(stdin); // Limpiamos buffer.
 		}
 		
@@ -53,20 +54,3 @@ int obtenerSeleccionMenu()
 		case SALIR: return SALIR;
 	}
 }
-
-
-int menuPrincipal()
-{
-	//Grafo grafo = NULL;
-	char *nombre = NULL;
-	int* listaGrafo = NULL;
-	if (obtenerSeleccionMenu() == INGRESAR)
-	{
-		nombre = obtenerNombreArchivo();
-		listaGrafo = leerArchivo(nombre);
-	}
-	//Grafo* grafo = guardarDatos(listaGrafo[0], listaGrafo[1], listaGrafo[2], listaGrafo[3], matrizAdyacencia)
-	return 0;
-}
-
-

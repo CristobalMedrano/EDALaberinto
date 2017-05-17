@@ -18,13 +18,15 @@ ifeq ($(OS_detected), Linux)
 endif
 
 CC = gcc 
-OBJECTS = Lectura.o Ejecucion.o Laboratorio_3_19083864-1.o
+OBJECTS = Lectura.o Menu.o Ejecucion.o Laboratorio_3_19083864-1.o
 
-all: Lectura.o Ejecucion.o Laboratorio_3_19083864-1.o
+all: $(OBJECTS)
 	$(CC)-o $(SALIDA) $(OBJECTS)
 	echo Compilacion Completa.
 Lectura.o: Lectura.c
 	$(CC)-c Lectura.c -o Lectura.o
+Menu.o: Menu.c
+	$(CC)-c Menu.c -o Menu.o
 Ejecucion.o: Ejecucion.c
 	$(CC)-c Ejecucion.c -o Ejecucion.o
 Laboratorio_3_19083864-1.o: Laboratorio_3_19083864-1.c
