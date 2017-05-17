@@ -14,21 +14,25 @@ ifeq ($(OS_detected), Windows)
 endif
 ifeq ($(OS_detected), Linux)
 	SALIDA = Laboratorio.out
-    REMOVE = -rm
+    REMOVE = -rm -f
 endif
 
 CC = gcc 
-OBJECTS = Lectura.o Menu.o Ejecucion.o Laboratorio_3_19083864-1.o
+OBJECTS = Lectura.o Menu.o Ejecucion.o Laboratorio_3_19083864-1.o TDA_Listas_Enlazadas.o Escritura.o
 
 all: $(OBJECTS)
 	$(CC)-o $(SALIDA) $(OBJECTS)
 	echo Compilacion Completa.
+TDA_Listas_Enlazadas.o: TDA_Listas_Enlazadas.c
+	$(CC)-c TDA_Listas_Enlazadas.c -o TDA_Listas_Enlazadas.o
 Lectura.o: Lectura.c
 	$(CC)-c Lectura.c -o Lectura.o
 Menu.o: Menu.c
 	$(CC)-c Menu.c -o Menu.o
 Ejecucion.o: Ejecucion.c
 	$(CC)-c Ejecucion.c -o Ejecucion.o
+Escritura.o: Escritura.c
+	$(CC)-c Escritura.c -o Escritura.o
 Laboratorio_3_19083864-1.o: Laboratorio_3_19083864-1.c
 	$(CC)-c Laboratorio_3_19083864-1.c -o Laboratorio_3_19083864-1.o
 clean:

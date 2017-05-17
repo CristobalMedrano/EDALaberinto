@@ -1,0 +1,8 @@
+Camino entrada a llave:
+3 - 10 - 12 - 11 - 14
+Distancia recorrida: 11
+
+Camino llave a salida:
+14 - 11 - 12 - 10 - 8 - 5 - 4 - 9
+Distancia recorrida: 21
+

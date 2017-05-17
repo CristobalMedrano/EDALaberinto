@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "Estructuras.h"
 #include "Lectura.h"
 
 /**
@@ -55,12 +56,6 @@ int* leerArchivo(char* nombre)
 		    	}
 	    	}
 	    	i++;
-	    	#ifdef DEBUG
-	    	printf("Vertices: %d\n", listaGrafo[0]);
-	    	printf("Entrada: %d\n", listaGrafo[1]);
-	    	printf("Llave: %d\n", listaGrafo[2]);
-	    	printf("Salida: %d\n", listaGrafo[3]);
-	    	#endif
 	    	listaGrafo[i] = 0;
 	    	i++;
 	    	while (feof(archivoEntrada) == 0)
@@ -74,9 +69,6 @@ int* leerArchivo(char* nombre)
 	    		
 	    	}
 	    	listaGrafo[4] = i-5;
-	    	#ifdef DEBUG
-	   	    printf("Soy la cantidad de elementos %d\n", listaGrafo[4]);
-	   	    #endif
     	}
     	else 
     	{
@@ -103,6 +95,9 @@ int** obtenerMatrizAdyacencia(int* listaGrafo)
 	int cantidadElementos = listaGrafo[4]; //Cantidad de elementos a leer.
 	int i;
 	int j;
+	int puntoInicio;
+	int puntoFin;
+	int longitud;
 	int** MatrizAdyacencia = (int **)calloc(Vertices+1, sizeof(int *));
 							for (i = 1; i < Vertices+1; ++i)
 							MatrizAdyacencia[i] = (int *)calloc(Vertices+1, sizeof(int));
@@ -112,19 +107,14 @@ int** obtenerMatrizAdyacencia(int* listaGrafo)
 		i = 0;
 		while(i < cantidadElementos)
 		{
-			MatrizAdyacencia[listaGrafo[i+5]][listaGrafo[i+6]] = listaGrafo[i+7]; 
+			puntoInicio = listaGrafo[i+5];
+			puntoFin = listaGrafo[i+6];
+			longitud = listaGrafo[i+7];
+
+			MatrizAdyacencia[puntoInicio][puntoFin] = longitud; 
+			MatrizAdyacencia[puntoFin][puntoInicio] = longitud;
 			i = i + 3;
 		}
-		#ifdef DEBUG
-		for (i = 1; i < listaGrafo[0]+1; ++i)
-		{
-			for (j = 1; j < listaGrafo[0]+1; ++j)
-			{
-				printf("%d  ", MatrizAdyacencia[i][j]);
-			}
-			printf("\n");
-		}
-		#endif
 	}
 	else
 	{
