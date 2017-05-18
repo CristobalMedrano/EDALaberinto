@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include "Estructuras.h"
 #include "Lectura.h"
+
 
 /**
 	@brief Funcion que obtiene el nombre del archivo ingresado por el usuario.
@@ -29,14 +31,14 @@ int* leerArchivo(char* nombre)
 	int* listaGrafo = NULL;
 	FILE *archivoEntrada;
 	archivoEntrada = fopen(nombre, "r");
-	
+
 	// Si la lectura del archivo es correcta, inicializamos variables.
 	if(archivoEntrada != NULL)
     {
     	int i = 0;
     	int valor;
     	char letra;
-    	listaGrafo = (int*)malloc(sizeof(int)*256);
+    	listaGrafo = (int*)malloc(sizeof(int)*(214748364));
     	// Si la asignacion de memoria es correcta, iniciamos la lectura.
     	if (listaGrafo != NULL)
     	{
@@ -68,7 +70,9 @@ int* leerArchivo(char* nombre)
 	    		}
 	    		
 	    	}
+	    	printf("hola\n");
 	    	listaGrafo[4] = i-5;
+	    	listaGrafo = (int*)realloc(listaGrafo, sizeof(int)*(listaGrafo[4]+5));
     	}
     	else 
     	{

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
+#include <time.h>
 #include "Estructuras.h"
 #include "Lectura.h"
 #include "Menu.h"
@@ -10,14 +11,14 @@
 
 Casilla* Dijkstra(Grafo* grafo, int vInicial)
 {
-	int vertices = grafo->Vertices;
+	int vertices = grafo->Vertices+1;
 	int verticeInicial = vInicial;
 	int** matrizAdyacencia = grafo->MatrizAdyacencia;
-	Casilla* camino = (Casilla*)malloc(sizeof(Casilla)*vertices);
+	Casilla* camino = (Casilla*)malloc(sizeof(Casilla)*(vertices));
 	int Visitados[vertices];
 
 	int i;
-	for (i = 0; i < vertices; ++i)
+	for (i = 0; i < vertices; i++)
 	{
 		camino[i].anterior = -1;
 		Visitados[i] = FALSE;
@@ -40,7 +41,7 @@ Casilla* Dijkstra(Grafo* grafo, int vInicial)
 		int v;
 		for (v = 0; v < vertices; v++)
 		{
-			if (Visitados[v] == 0 && matrizAdyacencia[u][v] != FALSE)
+			if (matrizAdyacencia[u][v] != FALSE)
 			{
 				if (Visitados[v] == FALSE)
 				{
@@ -82,40 +83,46 @@ int ejecucionPrincipal()
 	Lista* caminoMinimoE_L = NULL;
 	Lista* caminoMinimoL_S = NULL;
 	int escritura = 0;
+	clock_t start;
 
 	mostrarMenuPrincipal();
 	if (obtenerSeleccionMenu() == SALIR)
 	{
 		return 0;
 	}
-	
+
 	nombre = obtenerNombreArchivo();
+	printf("\n- Iniciando Lectura.");
+	start = clock();
 	listaGrafo = leerArchivo(nombre);
 
 	if (listaGrafo != NULL)
 	{
-		printf("\n- Iniciando Lectura.");
-		printf("\nArchivo : %s, ingresado correctamente.\n", nombre);
-
+		printf("\nArchivo : %s, ingresado correctamente.\n", nombre);		
 		matrizAdyacencia = obtenerMatrizAdyacencia(listaGrafo);
 		Grafo* grafo = guardarDatos(listaGrafo[0], listaGrafo[1], listaGrafo[2], listaGrafo[3], matrizAdyacencia);
+		
+		printf("Tiempo de Lectura: %f(s)\n", ((double)clock() - start) / CLOCKS_PER_SEC);
+		
 		if (matrizAdyacencia != NULL && grafo != NULL)
 		{
 			printf("\n- Iniciando Solucion. \n");
+			start = clock(); //Inicio tiempo.
+
 			CaminoE_L = Dijkstra(grafo, grafo->Entrada);
-			caminoMinimoE_L = obtenerRecorrido(CaminoE_L, listaGrafo[1], listaGrafo[2]);
-			printf("\n- Desarrollando la Solucion. \n");
-			
+			caminoMinimoE_L = obtenerRecorrido(CaminoE_L, listaGrafo[1], listaGrafo[2]);			
 			CaminoL_S = Dijkstra(grafo, grafo->Llave);
 			caminoMinimoL_S = obtenerRecorrido(CaminoL_S, listaGrafo[2], listaGrafo[3]);
-			printf("\n- Solucion Terminada. \n");
+			printf("Tiempo de Solucion: %f(s)\n", ((double)clock() - start) / CLOCKS_PER_SEC);
+			
+			printf("\n- Iniciando Escritura. \n");
+			start = clock(); //Inicio tiempo.
 
 			escritura = escribirArchivo(caminoMinimoE_L, caminoMinimoL_S);
-
 			if (escritura == TRUE)
 			{
-				printf("\n- Ejecucion Terminada.\n");
 				printf("\nArchivo : Salida.out, creado correctamente.\n");
+				printf("Tiempo de Escritura: %f(s)\n", ((double)clock() - start) / CLOCKS_PER_SEC);
 			}
 		}		
 	}
