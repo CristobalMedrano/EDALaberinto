@@ -35,6 +35,9 @@ all: $(OBJECTS)
 Lectura.o: $(SOURCES)Lectura.c $(HEADERS)Lectura.h
 	$(CC) $(INCLUDE) -c $(SOURCES)Lectura.c -o Lectura.o
 
+TDA_LE.o: $(SOURCES)TDA_LE.c $(HEADERS)TDA_LE.h
+	$(CC) $(INCLUDE) -c $(SOURCES)TDA_LE.c -o TDA_LE.o
+
 TDA_ABO.o: $(SOURCES)TDA_ABO.c $(HEADERS)TDA_ABO.h
 	$(CC) $(INCLUDE) -c $(SOURCES)TDA_ABO.c -o TDA_ABO.o
 

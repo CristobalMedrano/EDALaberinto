@@ -33,43 +33,26 @@ char* obtenerNombreArchivo()
 	@param nombre : Nombre del archivo de texto a leer.
 	@returns listaGrafo con los datos del archivo de texto.
 */
-int* leerArchivo(char* nombre)
+Usuario* leerArchivo(char* nombre)
 {
-	int* listaUsuarios = NULL;
 	FILE *archivoEntrada;
 	archivoEntrada = fopen(nombre, "r");
 
 	// Si la lectura del archivo es correcta, inicializamos variables.
 	if(archivoEntrada != NULL)
     {
-    	int i = 0;
-    	char usuario[256];
     	int cantidadUsuarios;
 
     	fscanf(archivoEntrada, "%d", &cantidadUsuarios);
     	
-    	listaUsuarios = (int*)malloc(sizeof(int)*(5*cantidadUsuarios));
-    	// Si la asignacion de memoria es correcta, iniciamos la lectura.
-    	if (listaUsuarios != NULL)
-    	{
-    		
-    		listaUsuarios[i] = cantidadUsuarios;
-	    	while(i+1 < cantidadUsuarios)
-	    	{
-	    		fscanf(archivoEntrada, " %c", &listaUsuarios);
-		    	i++;
-	    	}
-    	}
-    	else 
-    	{
-    		printf("\n- Error de Memoria. Funcion leerArchivo: No se pudo asignar la memoria solicitada.\n\n");
-    		return NULL;
-    	}
+		listaUsuarios[i] = cantidadUsuarios;
+		printf("%d\n", listaUsuarios[0]);
+
     } else 
     { 
     	printf("\n- Error de Lectura. Funcion leerArchivo: El archivo ingresado no existe.\n\n");
     	return NULL;	
     }
     fclose(archivoEntrada);
-    return listaUsuarios;
+    return nuevoUsuario;
 }

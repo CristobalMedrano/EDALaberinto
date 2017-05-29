@@ -7,12 +7,12 @@
 int main(int argc, char const *argv[])
 {
 	char *nombre = NULL;
-	nombre = obtenerNombreArchivo();
-	int* listaUsuarios = leerArchivo(nombre);
-	for (int i = 0; i < 17; ++i)
+	//nombre = obtenerNombreArchivo();
+	char* listaUsuarios = leerArchivo("Telefonos.in");
+	/*for (int i = 0; i < 17; ++i)
 	{
 		printf("%s\n", listaUsuarios[i]);
-	}
+	}*/
 	//MenuArboles();
 	return 0;
 }
