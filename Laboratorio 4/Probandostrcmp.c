@@ -2,10 +2,13 @@
 #include <stdio.h>
 #include <string.h>
 
+
+
 int main(int argc, char const *argv[])
 {
-	char str1[30] = "Andrea Coloma Espinosa";
-	char str2[30] = "Andrea Coloma Espinoza";
+
+	char str1[60] = "Aela mundo como estan todos, yo bien";
+	char str2[60] = "Adios";
 	int quienesMayor = strcmp(str1, str2);
 	if(quienesMayor < 0)
    {
@@ -19,5 +22,6 @@ int main(int argc, char const *argv[])
    {
       printf("%s es igual que %s", str1, str2);
    }
+
 	return 0;
 }

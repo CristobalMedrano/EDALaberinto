@@ -4,23 +4,12 @@
 #include <stdlib.h>
 #include <Estructuras.h>
 #include <TDA_ABO.h>
+#include <string.h>
+
 
 // Funcion crear
-Arbol* crearHoja(int dato, Arbol* arbol_izquierdo, Arbol* arbol_derecho)
-{
-	Arbol* nuevaHoja = (Arbol*)malloc(sizeof(Arbol)); 
-	if(nuevaHoja!=NULL){ 
-	    nuevaHoja->dato = dato; 
-		nuevaHoja->hijoIzquierdo = arbol_izquierdo;
-		nuevaHoja->hijoDerecho = arbol_derecho;
-		return nuevaHoja;
-	} 
-	else{
-		printf("No es posible asignar memoria para crearHoja");
-		return NULL; 
-	} 
-} 
 
+/*
 Arbol* borrarArbol(Arbol* arbol, int dato)
 {
 	Arbol* posicion = buscarDato(arbol, dato);
@@ -75,9 +64,9 @@ Arbol* borrarArbol(Arbol* arbol, int dato)
 	posicion->dato = valorReemplazo;
 	posicion->hijoDerecho = borrarArbol(hijo_DERECHO(posicion), dato);
 	return arbol;
-}
+}*/
 
-Arbol* obtenerRaiz(Arbol* arbol)
+/*Arbol* obtenerRaiz(Arbol* arbol)
 {
 	return arbol;
 }
@@ -152,8 +141,6 @@ Arbol* obtenerPadre(Arbol* arbol, Arbol* elemento)
 	}
 }
 
-
-
 Arbol* obtenerMayorElemento(Arbol* arbol)
 {
 	Arbol* indice = arbol;
@@ -194,17 +181,17 @@ Arbol* buscarDato(Arbol* arbol, int dato)
 		}
 	}
 	return NULL;
-}
+}*/
 
-int obtenerDatoArbol(Arbol* arbol)
+char* obtenerDatoArbol(Arbol* arbol)
 {
 	if (arbol == NULL)
 	{
-		return SIN_DATO;
+		return NULL;
 	}
 	else
 	{
-		return arbol->dato;
+		return arbol->usuario;
 	}
 }
 
@@ -232,34 +219,47 @@ Arbol* hijo_DERECHO(Arbol* arbol)
 	}
 	return arbol;
 }
-
+Arbol* crearHoja(char* usuario, Arbol* arbol_izquierdo, Arbol* arbol_derecho)
+{
+	Arbol* nuevaHoja = (Arbol*)malloc(sizeof(Arbol)); 
+	if(nuevaHoja!=NULL){ 
+	    nuevaHoja->usuario = usuario; 
+		nuevaHoja->hijoIzquierdo = arbol_izquierdo;
+		nuevaHoja->hijoDerecho = arbol_derecho;
+		return nuevaHoja;
+	} 
+	else{
+		printf("No es posible asignar memoria para crearHoja");
+		return NULL; 
+	} 
+} 
 
 // Funcion insertar
-Arbol* insertarDato(Arbol* arbol, int dato)
+Arbol* insertarDato(Arbol* arbol, char* usuario)
 {
-	Arbol* hoja = crearHoja(dato, NULL, NULL);
+	Arbol* hoja = crearHoja(usuario, NULL, NULL);
 	if (arbol == NULL)
 	{
 		return hoja;
 	}
-	if (hijo_IZQUIERDO(arbol) == NULL && dato < obtenerDatoArbol(arbol))
+	if (hijo_IZQUIERDO(arbol) == NULL && strcmp(obtenerDatoArbol(hoja),obtenerDatoArbol(arbol)) < 0)
 	{
 		arbol->hijoIzquierdo = hoja;
 		return arbol;
 	}
-	if (hijo_DERECHO(arbol) == NULL && dato >= obtenerDatoArbol(arbol))
+	if (hijo_DERECHO(arbol) == NULL && strcmp(usuario,obtenerDatoArbol(arbol)) >= 0)
 	{
 		arbol->hijoDerecho = hoja;
 		return arbol;
 	}
-	if (dato < obtenerDatoArbol(arbol))
+	if (strcmp(usuario,obtenerDatoArbol(arbol)) < 0)
 	{
-		arbol->hijoIzquierdo = insertarDato(hijo_IZQUIERDO(arbol), dato);
+		arbol->hijoIzquierdo = insertarDato(hijo_IZQUIERDO(arbol), usuario);
 		return arbol;
 	}
 	else
 	{
-		arbol->hijoDerecho = insertarDato(hijo_DERECHO(arbol), dato);
+		arbol->hijoDerecho = insertarDato(hijo_DERECHO(arbol), usuario);
 		return arbol;
 	}
 	return arbol;
@@ -270,7 +270,7 @@ void inOrden(Arbol* arbol)
 	if (arbol != NULL)
 	{ 
 	inOrden(arbol->hijoIzquierdo);
- 	printf("%d ", arbol->dato);
+ 	printf("%s\n", arbol->usuario);
  	inOrden(arbol->hijoDerecho);
  	}
 }
@@ -279,7 +279,7 @@ void preOrden(Arbol* arbol)
 {
 	if (arbol != NULL)
 	{ 
- 	printf("%d ", arbol->dato);
+ 	printf("%s\n", arbol->usuario);
  	preOrden(arbol->hijoIzquierdo);
  	preOrden(arbol->hijoDerecho);
 	}
@@ -291,11 +291,11 @@ void postOrden(Arbol* arbol)
 	{ 
  	postOrden(arbol->hijoIzquierdo);
  	postOrden(arbol->hijoDerecho);
- 	printf("%d ", arbol->dato);
+ 	printf("%s\n", arbol->usuario);
 	}
 }
 
-void MenuArboles()
+/*void MenuArboles()
 {
 	Arbol* arbol = NULL;
 	int opcion = 0;
@@ -342,4 +342,4 @@ void MenuArboles()
 		}
 		
 	} while (opcion != -1);
-}
+}*/

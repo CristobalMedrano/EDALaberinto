@@ -12,6 +12,6 @@
 #define DEBUG
 
 char* obtenerNombreArchivo();
-char* leerArchivo(char* nombre);
+Arbol* leerArchivo(char* nombre);
 
 #endif

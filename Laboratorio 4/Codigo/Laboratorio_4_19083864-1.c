@@ -3,16 +3,17 @@
 #include <Estructuras.h>
 #include <TDA_ABO.h>
 #include <Lectura.h>
+//#include <Lectura.h>
 
 int main(int argc, char const *argv[])
 {
-	char *nombre = NULL;
+	Arbol* arbol = NULL;
+	//char *nombre = NULL;
 	//nombre = obtenerNombreArchivo();
-	char* listaUsuarios = leerArchivo("Telefonos.in");
-	/*for (int i = 0; i < 17; ++i)
-	{
-		printf("%s\n", listaUsuarios[i]);
-	}*/
+	// Cambiar nombre de leer archivo, por obtenerArbol
+	arbol = leerArchivo("Telefonos.in");
+	printf("\nin orden es: \n\n");
+	inOrden(arbol);
 	//MenuArboles();
 	return 0;
 }
