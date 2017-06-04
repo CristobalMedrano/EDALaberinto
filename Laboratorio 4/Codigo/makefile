@@ -18,19 +18,22 @@ ifeq ($(OS_detected), Linux)
 endif
 
 #Carpeta de modulos y cabeceras
-SOURCES = Sources/
-HEADERS = Headers/
+SOURCES = Source_files/
+HEADERS = Header_files/
 
 #Variables
 CCDebug = gcc -Wall
 CC = gcc
 INCLUDE = -I $(HEADERS)
-OBJECTS = Lectura.o TDA_LE.o TDA_ABO.o Ejecucion.o Escritura.o Laboratorio_4_19083864-1.o
+OBJECTS = Menu.o TDA_LE.o TDA_ABO.o Lectura.o Busqueda.o Escritura.o Laboratorio_4_19083864-1.o
 
 .SILENT: clean all
 all: $(OBJECTS)
 	$(CC) -o $(EJECUTABLE) $(OBJECTS)
 	echo Compilacion Completa. Ejecutable: $(EJECUTABLE)
+
+Menu.o: $(SOURCES)Menu.c $(HEADERS)Menu.h
+	$(CC) $(INCLUDE) -c $(SOURCES)Menu.c -o Menu.o
 
 Lectura.o: $(SOURCES)Lectura.c $(HEADERS)Lectura.h
 	$(CC) $(INCLUDE) -c $(SOURCES)Lectura.c -o Lectura.o
@@ -41,8 +44,8 @@ TDA_LE.o: $(SOURCES)TDA_LE.c $(HEADERS)TDA_LE.h
 TDA_ABO.o: $(SOURCES)TDA_ABO.c $(HEADERS)TDA_ABO.h
 	$(CC) $(INCLUDE) -c $(SOURCES)TDA_ABO.c -o TDA_ABO.o
 
-Ejecucion.o: $(SOURCES)Ejecucion.c $(HEADERS)Ejecucion.h
-	$(CC) $(INCLUDE) -c $(SOURCES)Ejecucion.c -o Ejecucion.o
+Busqueda.o: $(SOURCES)Busqueda.c $(HEADERS)Busqueda.h
+	$(CC) $(INCLUDE) -c $(SOURCES)Busqueda.c -o Busqueda.o
 
 Escritura.o: $(SOURCES)Escritura.c $(HEADERS)Escritura.h
 	$(CC) $(INCLUDE) -c $(SOURCES)Escritura.c -o Escritura.o
