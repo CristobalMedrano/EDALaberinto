@@ -1,9 +1,9 @@
 /**
-	@file TDA_Listas_Enlazadas.h
+	@file TDA_LE.h
 	@brief Libreria que contiene el encabezado de las funciones de listas enlazadas del programa.
 
 	@author Cristobal Medrano
-	@date 18/05/2017
+	@date 29/05/2017
   
 */
 

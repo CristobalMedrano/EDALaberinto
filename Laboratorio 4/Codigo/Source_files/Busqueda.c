@@ -1,3 +1,14 @@
+/**
+    @file Busqueda.c
+    @brief Modulo de Busqueda del programa.
+    
+    Funciones de Busqueda.
+
+    @author Cristobal Medrano
+    @date 02/06/2017
+  
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,10 +16,15 @@
 #include <TDA_ABO.h>
 #include <TDA_LE.h>
 #include <Busqueda.h>
-
+/**
+    @brief Funcion que busca los datos del usuario en el directorio.
+    @param arbolDatos, dato de tipo Arbol con los usuarios.
+    @param listaBusqueda, dato de tipo Lista con los usuarios a buscar.
+    @returns listaBusqueda, Lista actualizada con los telefonos del usuario.
+*/
 Lista* buscarDatos_Usuario(Arbol* arbolDatos, Lista* listaBusqueda)
-{
-	Arbol* usuarioBuscado = NULL;
+{	
+    Arbol* usuarioBuscado = NULL;
 	char* telefonoUsuario = NULL;
 	ListaTelefonos* listaTelefonos = NULL;
 	

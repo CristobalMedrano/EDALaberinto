@@ -20,12 +20,25 @@
 	@brief Funcion que obtiene el nombre del archivo ingresado por el usuario.
 	@returns nombreArchivo ingresado por el usuario.
 */
-char* obtenerNombreArchivo()
+char* obtenerNombreArchivo(int entrada)
 {
-	static char nombreArchivo[256];
-	fflush(stdin); // Limpiamos buffer de entrada.
-	scanf("%s", nombreArchivo);
-	fflush(stdin); // Limpiamos buffer.
+	char* nombreArchivo = (char*)malloc(sizeof(char)*256);
+	char nombreLeido[256];
+	if (entrada == DIRECTORIO)
+	{
+		printf("\nIngrese archivo del Directorio: ");
+		fflush(stdin); // Limpiamos buffer de entrada.
+		scanf("%s", nombreLeido);
+		fflush(stdin); // Limpiamos buffer.
+	}
+	if (entrada == BUSCAR)
+	{
+		printf("\nIngrese archivo de Busqueda: ");
+		fflush(stdin); // Limpiamos buffer de entrada.
+		scanf("%s", nombreLeido);
+		fflush(stdin); // Limpiamos buffer.
+	}
+	strcpy(nombreArchivo, nombreLeido);
 	return nombreArchivo;
 }
 

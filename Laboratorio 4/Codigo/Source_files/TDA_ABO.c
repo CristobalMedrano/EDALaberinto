@@ -1,12 +1,23 @@
-// TDA ARBOLES BINARIOS ORDENADO CON PUNTEROS
+/**
+	@file TDA_ABO.c
+	@brief Modulo de TDA ABO del programa.
+	
+	Funciones del TDA Arbol Binario Ordenado.
 
+	@author Cristobal Medrano
+	@date 27/05/2017
+  
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <Estructuras.h>
 #include <TDA_ABO.h>
 #include <string.h>
-
-
+/**
+	@brief Funcion que obtiene el menor elemento de un arbol
+	@param arbol, Arbol a leer.
+	@return indice, Arbol con el elemento menor.
+*/
 Arbol* obtenerMenorElemento(Arbol* arbol)
 {
 	Arbol* indice = arbol;
@@ -17,11 +28,22 @@ Arbol* obtenerMenorElemento(Arbol* arbol)
 	return indice;
 }
 
+/**
+	@brief Funcion que obtiene la raiz de un arbol
+	@param arbol, Arbol a leer.
+	@return indice, Arbol con la raiz.
+*/
 Arbol* obtenerRaiz(Arbol* arbol)
 {
 	return arbol;
 }
 
+/**
+	@brief Funcion que obtiene el padre de un elemento Arbol.
+	@param arbol, Arbol a leer.
+	@param elemento, dato de tipo arbol a buscar.
+	@return padre, Arbol con el padre del elemento.
+*/
 Arbol* obtenerPadre(Arbol* arbol, Arbol* elemento)
 {
 	Arbol* padre = NULL;
@@ -44,6 +66,12 @@ Arbol* obtenerPadre(Arbol* arbol, Arbol* elemento)
 	}
 }
 
+/**
+	@brief Funcion que el menor elemento que sigue de un dato Arbol.
+	@param arbol, Arbol a leer.
+	@param actual, Arbol en la posicion actual.
+	@return menorElemento que sigue al actual.
+*/
 Arbol* menorSiguiente(Arbol* arbol, Arbol* actual)
 {
 	Arbol* padre = NULL;
@@ -68,7 +96,13 @@ Arbol* menorSiguiente(Arbol* arbol, Arbol* actual)
 	return padre;
 }
 
-
+/**
+	@brief Funcion que busca un usuario en el arbol
+	@param arbol, Arbol a leer.
+	@param nombreUsuario, dato a buscar en el arbol.
+	@return indice, Arbol con el nombre de usuario.
+	@return NULL, si no se encontro el nombre de usuario.
+*/
 Arbol* buscarUsuario(Arbol* arbol, char* nombreUsuario)
 {
 	Arbol* indice = arbol;
@@ -91,6 +125,12 @@ Arbol* buscarUsuario(Arbol* arbol, char* nombreUsuario)
 	return NULL;
 }
 
+/**
+	@brief Funcion que obtiene el dato del arbol
+	@param arbol, Arbol a leer.
+	@return nombreUsuario, si es que el arbol lo posee.
+	@return NULL, si no se encuentra el dato.
+*/
 char* obtenerDatoArbol(Arbol* arbol)
 {
 	if (arbol == NULL)
@@ -103,6 +143,12 @@ char* obtenerDatoArbol(Arbol* arbol)
 	}
 }
 
+/**
+	@brief Funcion que obtiene el telefono del arbol
+	@param arbol, Arbol a leer.
+	@return telefonoUsuario, si es que el arbol lo posee.
+	@return NULL, si no se encuentra el telefono.
+*/
 char* obtenerTelefonoArbol(Arbol* arbol)
 {
 	if (arbol == NULL)
@@ -115,6 +161,12 @@ char* obtenerTelefonoArbol(Arbol* arbol)
 	}
 }
 
+/**
+	@brief Funcion que obtiene el hijo izquierdo de un arbol
+	@param arbol, Arbol a leer.
+	@return hijo izquierdo, si posee hijo izquierdo.
+	@return NULL, si no posee hijo izquierdo.
+*/
 Arbol* hijo_IZQUIERDO(Arbol* arbol)
 {
 	if (arbol == NULL)
@@ -127,6 +179,12 @@ Arbol* hijo_IZQUIERDO(Arbol* arbol)
 	}
 }
 
+/**
+	@brief Funcion que obtiene el hijo derecho de un arbol
+	@param arbol, Arbol a leer.
+	@return hijo derecho, si posee hijo derecho.
+	@return NULL, si no posee hijo derecho.
+*/
 Arbol* hijo_DERECHO(Arbol* arbol)
 {
 	if (arbol == NULL)
@@ -139,6 +197,16 @@ Arbol* hijo_DERECHO(Arbol* arbol)
 	}
 	return arbol;
 }
+
+/**
+	@brief Funcion que crear un nodo tipo Arbol.
+	@param nombreUsuario, usuario a guardar en el arbol.
+	@param telefonoUsuario, telefono del usuario a guardar.
+	@param arbol_izquierdo, hijo izquierdo a enlazar
+	@param arbol_derecho, hijo derecho a enlazar
+	@return nuevaHoja, con los datos ingresados.
+	@return NULL, si no fue posible asignar memoria.
+*/
 Arbol* crearHoja(char* nombreUsuario, char* telefonoUsuario, Arbol* arbol_izquierdo, Arbol* arbol_derecho)
 {
 	Arbol* nuevaHoja = (Arbol*)malloc(sizeof(Arbol)); 
@@ -155,7 +223,14 @@ Arbol* crearHoja(char* nombreUsuario, char* telefonoUsuario, Arbol* arbol_izquie
 	} 
 } 
 
-// Funcion insertar
+/**
+	@brief Funcion que inserta un usuario en el arbol.
+	@param arbol, Arbol a insertar el dato.
+	@param nombreUsuario, nombre del usuario a insertar.
+	@param telefonoUsuario, telefono del usuario a insertar.
+	@return hoja, si el arbol es nulo.
+	@return arbol, con el dato insertado.
+*/
 Arbol* insertarDato(Arbol* arbol, char* nombreUsuario, char* telefonoUsuario)
 {
 	Arbol* hoja = crearHoja(nombreUsuario, telefonoUsuario, NULL, NULL);
@@ -186,6 +261,10 @@ Arbol* insertarDato(Arbol* arbol, char* nombreUsuario, char* telefonoUsuario)
 	return arbol;
 }
 
+/**
+	@brief Procedimiento que muestra el recorrido del arbol en inOrden
+	@param arbol, arbol a recorrer.
+*/
 void inOrden(Arbol* arbol)
 {
 	if (arbol != NULL)
@@ -196,6 +275,10 @@ void inOrden(Arbol* arbol)
  	}
 }
 
+/**
+	@brief Procedimiento que muestra el recorrido del arbol en preOrden
+	@param arbol, arbol a recorrer.
+*/
 void preOrden(Arbol* arbol)
 {
 	if (arbol != NULL)
@@ -206,6 +289,10 @@ void preOrden(Arbol* arbol)
 	}
 }
 
+/**
+	@brief Procedimiento que muestra el recorrido del arbol en postOrden
+	@param arbol, arbol a recorrer.
+*/
 void postOrden(Arbol* arbol)
 {
 	if (arbol != NULL)

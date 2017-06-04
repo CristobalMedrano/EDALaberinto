@@ -97,7 +97,7 @@ Lista* InsertarPos(Lista* L, int pos, char* nombreUsuario)
 /**
 	@brief Funcion que inserta un elemento al final de la lista.
 	@param L es una Lista de nodos.
-	@param dato es el elemento a guardar en la lista.
+	@param nombreUsuario es el elemento a guardar en la lista.
 	@returns Lista (puntero), con los datos actualizados.
 */
 Lista* InsertarFinal(Lista* L, char* nombreUsuario)
@@ -144,7 +144,7 @@ Lista* InsertarFinal(Lista* L, char* nombreUsuario)
 /**
 	@brief Funcion que inserta un elemento al final de la lista.
 	@param L es una Lista de nodos.
-	@param dato es el elemento a guardar en la lista.
+	@param telefonoUsuario es el elemento a guardar en la lista.
 	@returns Lista (puntero), con los datos actualizados.
 */
 ListaTelefonos* InsertarTelefono(ListaTelefonos* L, char* telefonoUsuario)
@@ -245,19 +245,6 @@ void mostrar(Lista * L)
         while(auxiliar!=NULL)
         {
             printf("Elemento a buscar: %s\n", auxiliar->nombreUsuario);
-            auxiliar = auxiliar->siguiente;
-        }
-	}
-}
-void mostrarNumero(ListaTelefonos * L)
-{
-	if(L!=NULL)
-	{
-        ListaTelefonos *auxiliar = crearNodoTelefono();
-        auxiliar=L;
-        while(auxiliar!=NULL)
-        {
-            printf("Elemento a buscar: %s\n", auxiliar->telefonoUsuario);
             auxiliar = auxiliar->siguiente;
         }
 	}

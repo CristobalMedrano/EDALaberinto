@@ -1,6 +1,21 @@
+/**
+	@file Estructuras.h
+	@brief Libreria que contiene las estructuras del programa.
+
+	@author Cristobal Medrano
+	@date 02/06/2017
+*/
+
 #ifndef ESTRUCTURAS
 #define ESTRUCTURAS
 
+/**
+	@struct ListaTelefonos
+	@brief Estructura de ListaTelefonos, contiene una lista con los 
+	telefonos del usuario.
+	@param telefonoUsuario, cadena de caracteres con el numero.
+	@param siguiente, un puntero al siguiente telefono.
+*/
 typedef struct ListaTelefonos
 {
 	char* telefonoUsuario;
@@ -8,10 +23,11 @@ typedef struct ListaTelefonos
 } ListaTelefonos;
 
 /**
-	@struct lista
-	@brief Estructura de Lista, contiene una lista con el camino recorrido final.
-	@param dato de tipo Entero
-	@param siguiente un puntero al siguiente dato.
+	@struct Lista
+	@brief Estructura de Lista, contiene una lista con los usuarios leidos.
+	@param nombreUsuario, cadena de caracteres con el nombre.
+	@param listaTelefonos, Lista con los numeros del usuario.
+	@param siguiente, un puntero al siguiente usuario.
 */
 typedef struct Lista
 {
@@ -20,6 +36,15 @@ typedef struct Lista
 	struct Lista *siguiente;
 } Lista;
 
+/**
+	@struct Arbol
+	@brief Estructura de Arbol, contiene un arbol binario ordenado.
+	@param nombreUsuario, cadena de caracteres con el nombre.
+	@param telefonoUsuario, cadena de caracteres con el numero.
+	@param hijoIzquierdo, puntero al hijo izquierdo.
+	@param hijoDerecho, puntero al hijo derecho.
+
+*/
 typedef struct Arbol
 {
     char* nombreUsuario;
@@ -27,11 +52,5 @@ typedef struct Arbol
     struct Arbol* hijoIzquierdo;
     struct Arbol* hijoDerecho;
 } Arbol;
-
-// Como tengo los datos segmentados, puedo crear mas de una categoria, es decir
-// puedp guardar el numero asociado al nombre de usuario. Para recuperar el dato
-// busco el nombre de usuario que sea el que quiero, luego las coincidencias las
-// reviso sus numeros (gracias a un contador de usuarios repetidos) y escribo
-// los nombres.
 
 #endif

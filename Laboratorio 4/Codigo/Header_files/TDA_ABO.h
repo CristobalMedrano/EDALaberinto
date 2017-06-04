@@ -1,3 +1,12 @@
+/**
+	@file TDA_ABO.h
+	@brief Libreria que contiene el encabezado de las funciones del TDA ABO del programa.
+
+	@author Cristobal Medrano
+	@date 28/05/2017
+  
+*/
+
 #ifndef TDA_ARBOL
 #define TDA_ARBOL
 
