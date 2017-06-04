@@ -5,7 +5,7 @@
 	Funciones de lectura.
 
 	@author Cristobal Medrano
-	@date 18/05/2017
+	@date 27/05/2017
   
 */
 #include <stdio.h>
@@ -14,39 +14,39 @@
 #include <Estructuras.h>
 #include <Lectura.h>
 #include <TDA_ABO.h>
-
-
+#include <TDA_LE.h>
 
 /**
 	@brief Funcion que obtiene el nombre del archivo ingresado por el usuario.
-	@returns el nombre ingresado por el usuario.
+	@returns nombreArchivo ingresado por el usuario.
 */
 char* obtenerNombreArchivo()
 {
-	static char leerNombre[256];
+	static char nombreArchivo[256];
 	fflush(stdin); // Limpiamos buffer de entrada.
 	printf("Ingrese nombre del archivo: \n");
-	scanf("%s", leerNombre);
+	scanf("%s", nombreArchivo);
 	fflush(stdin); // Limpiamos buffer.
-	return leerNombre;
+	return nombreArchivo;
 }
 
-char* obtenerUsuario(FILE* archivoEntrada)
+/**
+	@brief Funcion que lee el nombre de usuario, desde un
+	archivo de texto.in
+	@param archivoEntrada, archivo tipo FILE* con la direccion
+	de memoria del archivo leido.
+	@returns nombreUsuario, nombre del usuario.
+	@returns NULL, si no fue posible leer el nombre.
+*/
+char* leerNombre_Usuario(FILE* archivoEntrada)
 {
-	char* usuario = (char*)malloc(sizeof(char)*256);
-	if (usuario != NULL)
+	char* nombreUsuario = (char*)malloc(sizeof(char)*256);
+	if (nombreUsuario != NULL)
 	{
 		char primerNombre[40];
 		char segundoNombre[40];
 		char primerApellido[40];
 		char segundoApellido[40];
-		char codigoPais[10];
-		int codigoNCiudad;
-		char codigoCiudad[4];
-		int NprimerNumero;
-		char primerNumero[4];
-		int NsegundoNumero;
-		char segundoNumero[4];
 
 		// Primer nombre
 		fscanf(archivoEntrada, "%s", primerNombre);
@@ -56,6 +56,49 @@ char* obtenerUsuario(FILE* archivoEntrada)
 		fscanf(archivoEntrada, "%s", primerApellido);
 		// Segundo apellido
 		fscanf(archivoEntrada, "%s", segundoApellido);
+		
+		// Concatenamos el nombre del archivo.
+		strcpy(nombreUsuario, primerNombre);
+		strcat(nombreUsuario, " ");
+		strcat(nombreUsuario, segundoNombre);
+		strcat(nombreUsuario, " ");
+		strcat(nombreUsuario, primerApellido);
+		strcat(nombreUsuario, " ");
+		strcat(nombreUsuario, segundoApellido);
+
+		return nombreUsuario;
+	}
+	else
+	{
+		printf("\n- Error de Memoria. Funcion leerNombre_Usuario: No se pudo asignar la memoria solicitada.\n\n");
+		return NULL;
+	}
+	
+
+	return nombreUsuario;
+}
+
+/**
+	@brief Funcion que lee el numero telefonico del usuario, desde un
+	archivo de texto.in
+	@param archivoEntrada, archivo tipo FILE* con la direccion
+	de memoria del archivo leido.
+	@returns usuario, numero telefonico del usuario.
+	@returns NULL, si no fue posible leer el telefono.
+*/
+char* leerTelefono_Usuario(FILE* archivoEntrada)
+{
+	char* telefonoUsuario = (char*)malloc(sizeof(char)*256);
+	if (telefonoUsuario != NULL)
+	{
+		char codigoPais[10];
+		int codigoNCiudad;
+		char codigoCiudad[4];
+		int NprimerNumero;
+		char primerNumero[4];
+		int NsegundoNumero;
+		char segundoNumero[4];
+
 		// Codigo Pais
 		fscanf(archivoEntrada, "%s", codigoPais);
 		// Codigo Ciudad
@@ -73,38 +116,33 @@ char* obtenerUsuario(FILE* archivoEntrada)
 
 		
 		// Concatenamos el nombre del archivo.
-		strcpy(usuario, primerNombre);
-		strcat(usuario, " ");
-		strcat(usuario, segundoNombre);
-		strcat(usuario, " ");
-		strcat(usuario, primerApellido);
-		strcat(usuario, " ");
-		strcat(usuario, segundoApellido);
-		strcat(usuario, " ");
-		strcat(usuario, codigoPais);
-		strcat(usuario, " ");
-		strcat(usuario, codigoCiudad);
-		strcat(usuario, " ");
-		strcat(usuario, primerNumero);
-		strcat(usuario, " ");
-		strcat(usuario, segundoNumero);
-		return usuario;
+		strcpy(telefonoUsuario, codigoPais);
+		strcat(telefonoUsuario, " ");
+		strcat(telefonoUsuario, codigoCiudad);
+		strcat(telefonoUsuario, " ");
+		strcat(telefonoUsuario, primerNumero);
+		strcat(telefonoUsuario, " ");
+		strcat(telefonoUsuario, segundoNumero);
+		return telefonoUsuario;
 	}
 	else
 	{
-		printf("\n- Error de Memoria. Funcion obtenerUsuario: No se pudo asignar la memoria solicitada.\n\n");
+		printf("\n- Error de Memoria. Funcion leerTelefono_Usuario: No se pudo asignar la memoria solicitada.\n\n");
+		return NULL;
 	}
 	
 
-	return usuario;
+	return telefonoUsuario;
 }
 
 /**
-	@brief Funcion que lee el archivo de texto.
+	@brief Funcion que crear un arbol binario ordenado, desde un archivo
+	de texto.in.
 	@param nombre : Nombre del archivo de texto a leer.
-	@returns listaGrafo con los datos del archivo de texto.
+	@returns nuevoArbol, con los datos del archivo de texto.
+	@returns NULL, si no fue posible leer el archivo.
 */
-Arbol* leerArchivo(char* nombre)
+Arbol* crearArbol(char* nombre)
 {
 	FILE *archivoEntrada;
 	archivoEntrada = fopen(nombre, "r");
@@ -114,14 +152,17 @@ Arbol* leerArchivo(char* nombre)
 	{
 		int cantidadUsuarios;
 		fscanf(archivoEntrada, "%d", &cantidadUsuarios);
-		char* usuario = NULL;
+		char* nombreUsuario = NULL;
+		char* telefonoUsuario = NULL;
 		int i = 0;
 		while (i < cantidadUsuarios)
 		{
-			usuario = obtenerUsuario(archivoEntrada);
-			if (usuario != NULL)
+			nombreUsuario = leerNombre_Usuario(archivoEntrada);
+			telefonoUsuario = leerTelefono_Usuario(archivoEntrada);
+
+			if (nombreUsuario != NULL && telefonoUsuario != NULL)
 			{
-				nuevoArbol = insertarDato(nuevoArbol, usuario);
+				nuevoArbol = insertarDato(nuevoArbol, nombreUsuario, telefonoUsuario);
 			}
 			i++;
 		}
@@ -134,3 +175,38 @@ Arbol* leerArchivo(char* nombre)
 	fclose(archivoEntrada);
 	return nuevoArbol;
 }
+
+/**
+	@brief Funcion que obtiene la lista de usuarios a buscar.
+	@param nombre del archivo a leer.
+	@returns listaBusqueda, con los usuarios a leer.
+	@returns NULL, si no fue posible leer el archivo.
+*/
+Lista* obtenerListaBusqueda(char* nombre)
+{
+	FILE *archivoEntrada;
+	archivoEntrada = fopen(nombre, "r");
+	
+	Lista* listaBusqueda = NULL;
+	if (archivoEntrada != NULL)
+	{
+		int cantidadUsuarios;
+		fscanf(archivoEntrada, "%d", &cantidadUsuarios);
+		int i = 0;
+		char* usuario = NULL;
+		while (i < cantidadUsuarios)
+		{
+			usuario = leerNombre_Usuario(archivoEntrada);
+			listaBusqueda = InsertarFinal(listaBusqueda, usuario);
+			i++;
+		}
+		//mostrar(listaBusqueda);
+	}
+	else
+	{
+		printf("\n- Error de Lectura. Funcion obtenerListaBusqueda: El archivo ingresado no existe.\n\n");
+		return NULL;
+	}
+	return listaBusqueda;
+}
+

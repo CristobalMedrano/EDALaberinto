@@ -25,7 +25,7 @@ HEADERS = Headers/
 CCDebug = gcc -Wall
 CC = gcc
 INCLUDE = -I $(HEADERS)
-OBJECTS = Lectura.o TDA_ABO.o Laboratorio_4_19083864-1.o
+OBJECTS = Lectura.o TDA_LE.o TDA_ABO.o Ejecucion.o Escritura.o Laboratorio_4_19083864-1.o
 
 .SILENT: clean all
 all: $(OBJECTS)
@@ -40,6 +40,12 @@ TDA_LE.o: $(SOURCES)TDA_LE.c $(HEADERS)TDA_LE.h
 
 TDA_ABO.o: $(SOURCES)TDA_ABO.c $(HEADERS)TDA_ABO.h
 	$(CC) $(INCLUDE) -c $(SOURCES)TDA_ABO.c -o TDA_ABO.o
+
+Ejecucion.o: $(SOURCES)Ejecucion.c $(HEADERS)Ejecucion.h
+	$(CC) $(INCLUDE) -c $(SOURCES)Ejecucion.c -o Ejecucion.o
+
+Escritura.o: $(SOURCES)Escritura.c $(HEADERS)Escritura.h
+	$(CC) $(INCLUDE) -c $(SOURCES)Escritura.c -o Escritura.o
 
 Laboratorio_4_19083864-1.o: Laboratorio_4_19083864-1.c $(HEADERS)Estructuras.h
 	$(CC) $(INCLUDE) -c Laboratorio_4_19083864-1.c -o Laboratorio_4_19083864-1.o

@@ -9,9 +9,14 @@
 #ifndef LECTURA
 
 #define LECTURA
+#define TRUE 1
+#define FALSE 0
 #define DEBUG
 
 char* obtenerNombreArchivo();
-Arbol* leerArchivo(char* nombre);
+char* leerNombre_Usuario(FILE* archivoEntrada);
+char* leerTelefono_Usuario(FILE* archivoEntrada);
+Arbol* crearArbol(char* nombre);
+Lista* obtenerListaBusqueda(char* nombre);
 
 #endif

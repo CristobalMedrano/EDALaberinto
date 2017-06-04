@@ -1,9 +1,29 @@
 #ifndef ESTRUCTURAS
 #define ESTRUCTURAS
 
+typedef struct ListaTelefonos
+{
+	char* telefonoUsuario;
+	struct ListaTelefonos *siguiente;
+} ListaTelefonos;
+
+/**
+	@struct lista
+	@brief Estructura de Lista, contiene una lista con el camino recorrido final.
+	@param dato de tipo Entero
+	@param siguiente un puntero al siguiente dato.
+*/
+typedef struct Lista
+{
+	char* nombreUsuario;
+	ListaTelefonos* listaTelefonos;
+	struct Lista *siguiente;
+} Lista;
+
 typedef struct Arbol
 {
-    char* usuario;
+    char* nombreUsuario;
+    char* telefonoUsuario;
     struct Arbol* hijoIzquierdo;
     struct Arbol* hijoDerecho;
 } Arbol;

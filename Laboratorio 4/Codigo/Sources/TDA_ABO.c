@@ -95,6 +95,53 @@ Arbol* mayorAnterior(Arbol* arbol, Arbol* actual)
 	return padre;
 }
 
+/*
+
+
+
+Arbol* obtenerMayorElemento(Arbol* arbol)
+{
+	Arbol* indice = arbol;
+	while (hijo_DERECHO(indice) != NULL)
+	{
+		indice = hijo_DERECHO(indice);
+	}
+	return indice;
+}
+*/
+Arbol* obtenerMenorElemento(Arbol* arbol)
+{
+	Arbol* indice = arbol;
+	while (hijo_IZQUIERDO(indice) != NULL)
+	{
+		indice = hijo_IZQUIERDO(indice);
+	}
+	return indice;
+}
+
+
+Arbol* obtenerPadre(Arbol* arbol, Arbol* elemento)
+{
+	Arbol* padre = NULL;
+	if (arbol == NULL)
+	{
+		return NULL;
+	}
+	if (hijo_IZQUIERDO(arbol) == elemento || hijo_DERECHO(arbol) == elemento)
+	{
+		return arbol;
+	}
+	padre = obtenerPadre(hijo_IZQUIERDO(arbol), elemento);
+	if (padre != NULL)
+	{
+		return padre;
+	}
+	else
+	{
+		return obtenerPadre(hijo_DERECHO(arbol), elemento);
+	}
+}
+
 Arbol* menorSiguiente(Arbol* arbol, Arbol* actual)
 {
 	Arbol* padre = NULL;
@@ -119,59 +166,18 @@ Arbol* menorSiguiente(Arbol* arbol, Arbol* actual)
 	return padre;
 }
 
-Arbol* obtenerPadre(Arbol* arbol, Arbol* elemento)
-{
-	Arbol* padre = NULL;
-	if (arbol == NULL)
-	{
-		return NULL;
-	}
-	if (hijo_IZQUIERDO(arbol) == elemento || hijo_DERECHO(arbol) == elemento)
-	{
-		return arbol;
-	}
-	padre = obtenerPadre(hijo_IZQUIERDO(arbol), elemento);
-	if (padre != NULL)
-	{
-		return padre;
-	}
-	else
-	{
-		return obtenerPadre(hijo_DERECHO(arbol), elemento);
-	}
-}
 
-Arbol* obtenerMayorElemento(Arbol* arbol)
-{
-	Arbol* indice = arbol;
-	while (hijo_DERECHO(indice) != NULL)
-	{
-		indice = hijo_DERECHO(indice);
-	}
-	return indice;
-}
-
-Arbol* obtenerMenorElemento(Arbol* arbol)
-{
-	Arbol* indice = arbol;
-	while (hijo_IZQUIERDO(indice) != NULL)
-	{
-		indice = hijo_IZQUIERDO(indice);
-	}
-	return indice;
-}
-
-Arbol* buscarDato(Arbol* arbol, int dato)
+Arbol* buscarUsuario(Arbol* arbol, char* nombreUsuario)
 {
 	Arbol* indice = arbol;
 	while (indice != NULL)
 	{
-		int datoActual = obtenerDatoArbol(indice);
-		if (datoActual == dato)
+		char* usuarioActual = obtenerDatoArbol(indice);
+		if (strcmp(nombreUsuario, usuarioActual) == 0)
 		{
 			return indice;
 		}
-		if (dato < datoActual)
+		if (strcmp(nombreUsuario, usuarioActual) < 0)
 		{
 			indice = hijo_IZQUIERDO(indice);
 		}
@@ -181,7 +187,7 @@ Arbol* buscarDato(Arbol* arbol, int dato)
 		}
 	}
 	return NULL;
-}*/
+}
 
 char* obtenerDatoArbol(Arbol* arbol)
 {
@@ -191,7 +197,19 @@ char* obtenerDatoArbol(Arbol* arbol)
 	}
 	else
 	{
-		return arbol->usuario;
+		return arbol->nombreUsuario;
+	}
+}
+
+char* obtenerTelefonoArbol(Arbol* arbol)
+{
+	if (arbol == NULL)
+	{
+		return NULL;
+	}
+	else
+	{
+		return arbol->telefonoUsuario;
 	}
 }
 
@@ -219,11 +237,12 @@ Arbol* hijo_DERECHO(Arbol* arbol)
 	}
 	return arbol;
 }
-Arbol* crearHoja(char* usuario, Arbol* arbol_izquierdo, Arbol* arbol_derecho)
+Arbol* crearHoja(char* nombreUsuario, char* telefonoUsuario, Arbol* arbol_izquierdo, Arbol* arbol_derecho)
 {
 	Arbol* nuevaHoja = (Arbol*)malloc(sizeof(Arbol)); 
 	if(nuevaHoja!=NULL){ 
-	    nuevaHoja->usuario = usuario; 
+	    nuevaHoja->nombreUsuario = nombreUsuario;
+	    nuevaHoja->telefonoUsuario = telefonoUsuario;
 		nuevaHoja->hijoIzquierdo = arbol_izquierdo;
 		nuevaHoja->hijoDerecho = arbol_derecho;
 		return nuevaHoja;
@@ -235,9 +254,9 @@ Arbol* crearHoja(char* usuario, Arbol* arbol_izquierdo, Arbol* arbol_derecho)
 } 
 
 // Funcion insertar
-Arbol* insertarDato(Arbol* arbol, char* usuario)
+Arbol* insertarDato(Arbol* arbol, char* nombreUsuario, char* telefonoUsuario)
 {
-	Arbol* hoja = crearHoja(usuario, NULL, NULL);
+	Arbol* hoja = crearHoja(nombreUsuario, telefonoUsuario, NULL, NULL);
 	if (arbol == NULL)
 	{
 		return hoja;
@@ -247,19 +266,19 @@ Arbol* insertarDato(Arbol* arbol, char* usuario)
 		arbol->hijoIzquierdo = hoja;
 		return arbol;
 	}
-	if (hijo_DERECHO(arbol) == NULL && strcmp(usuario,obtenerDatoArbol(arbol)) >= 0)
+	if (hijo_DERECHO(arbol) == NULL && strcmp(nombreUsuario,obtenerDatoArbol(arbol)) >= 0)
 	{
 		arbol->hijoDerecho = hoja;
 		return arbol;
 	}
-	if (strcmp(usuario,obtenerDatoArbol(arbol)) < 0)
+	if (strcmp(nombreUsuario,obtenerDatoArbol(arbol)) < 0)
 	{
-		arbol->hijoIzquierdo = insertarDato(hijo_IZQUIERDO(arbol), usuario);
+		arbol->hijoIzquierdo = insertarDato(hijo_IZQUIERDO(arbol), nombreUsuario, telefonoUsuario);
 		return arbol;
 	}
 	else
 	{
-		arbol->hijoDerecho = insertarDato(hijo_DERECHO(arbol), usuario);
+		arbol->hijoDerecho = insertarDato(hijo_DERECHO(arbol), nombreUsuario, telefonoUsuario);
 		return arbol;
 	}
 	return arbol;
@@ -270,7 +289,7 @@ void inOrden(Arbol* arbol)
 	if (arbol != NULL)
 	{ 
 	inOrden(arbol->hijoIzquierdo);
- 	printf("%s\n", arbol->usuario);
+	printf("%s%s\n", arbol->nombreUsuario, arbol->telefonoUsuario);
  	inOrden(arbol->hijoDerecho);
  	}
 }
@@ -279,7 +298,7 @@ void preOrden(Arbol* arbol)
 {
 	if (arbol != NULL)
 	{ 
- 	printf("%s\n", arbol->usuario);
+ 	printf("%s%s\n", arbol->nombreUsuario, arbol->telefonoUsuario);
  	preOrden(arbol->hijoIzquierdo);
  	preOrden(arbol->hijoDerecho);
 	}
@@ -291,7 +310,7 @@ void postOrden(Arbol* arbol)
 	{ 
  	postOrden(arbol->hijoIzquierdo);
  	postOrden(arbol->hijoDerecho);
- 	printf("%s\n", arbol->usuario);
+ 	printf("%s%s\n", arbol->nombreUsuario, arbol->telefonoUsuario);
 	}
 }
 
