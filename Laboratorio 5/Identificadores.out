@@ -1,0 +1,17 @@
+NODO: Aitor Liduvina Lorenzo Roman      ALTURA: 0 H_IZQ: NULO                              H_DER: NULO                              
+NODO: Aitor Liduvina Lorenzo Roman      ALTURA: 2 H_IZQ: Aitor Liduvina Lorenzo Roman      H_DER: Bernardo Eugenia Vidal Pastor     
+NODO: Bernardo Eugenia Vidal Pastor     ALTURA: 1 H_IZQ: NULO                              H_DER: Bonifacio Honorio Vidal Munoz     
+NODO: Bonifacio Honorio Vidal Munoz     ALTURA: 0 H_IZQ: NULO                              H_DER: NULO                              
+NODO: Democrito Bruno Caballero Morales ALTURA: 3 H_IZQ: Aitor Liduvina Lorenzo Roman      H_DER: Eugenia Cosme Pascual Marquez     
+NODO: Eugenia Cosme Pascual Marquez     ALTURA: 1 H_IZQ: NULO                              H_DER: Eusebio Erico Campos Martin       
+NODO: Eusebio Erico Campos Martin       ALTURA: 0 H_IZQ: NULO                              H_DER: NULO                              
+NODO: Ezequiel Nicolas Castillo Crespo  ALTURA: 4 H_IZQ: Democrito Bruno Caballero Morales H_DER: Liduvina Oriol Ramos Saez         
+NODO: Fatima Guillermo Marin Cruz       ALTURA: 0 H_IZQ: NULO                              H_DER: NULO                              
+NODO: Feliciano Teodosia Santos Navarro ALTURA: 1 H_IZQ: Fatima Guillermo Marin Cruz       H_DER: Javier Aurea Castro Diez          
+NODO: Javier Aurea Castro Diez          ALTURA: 0 H_IZQ: NULO                              H_DER: NULO                              
+NODO: Liduvina Oriol Ramos Saez         ALTURA: 3 H_IZQ: Feliciano Teodosia Santos Navarro H_DER: Noe Ambrosio Castro Diez          
+NODO: Moises Antero Gallego Cabrera     ALTURA: 0 H_IZQ: NULO                              H_DER: NULO                              
+NODO: Noe Ambrosio Castro Diez          ALTURA: 2 H_IZQ: Moises Antero Gallego Cabrera     H_DER: Virginia Primo Rey Montero        
+NODO: Sebastian Alberto Vargas Nunez    ALTURA: 0 H_IZQ: NULO                              H_DER: NULO                              
+NODO: Virginia Primo Rey Montero        ALTURA: 1 H_IZQ: Sebastian Alberto Vargas Nunez    H_DER: Vladimiro Julio Moreno Garrido    
+NODO: Vladimiro Julio Moreno Garrido    ALTURA: 0 H_IZQ: NULO                              H_DER: NULO                              
